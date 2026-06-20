@@ -1,14 +1,39 @@
 'use client';
 
 import Head from 'next/head';
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import Particles from "react-tsparticles";
 import { loadSlim } from "tsparticles-slim";
 import Image from 'next/image';
-import { motion } from 'framer-motion';
+import { motion, useInView } from 'framer-motion';
 
 export default function Home() {
   const [isDarkMode, setIsDarkMode] = useState(false);
+  const heroRef = useRef<HTMLDivElement>(null);
+  const projectsRef = useRef<HTMLDivElement>(null);
+  const galleryRef = useRef<HTMLDivElement>(null);
+  const achievementsRef = useRef<HTMLDivElement>(null);
+
+  const heroInView = useInView(heroRef, { amount: 0.2, once: false });
+  const projectsInView = useInView(projectsRef, { amount: 0.2, once: false });
+  const galleryInView = useInView(galleryRef, { amount: 0.2, once: false });
+  const achievementsInView = useInView(achievementsRef, { amount: 0.2, once: false });
+
+  useEffect(() => {
+    // initialize from localStorage or prefers-color-scheme
+    if (typeof window === "undefined") return;
+    const stored = localStorage.getItem("theme");
+    if (stored === "dark") setIsDarkMode(true);
+    else if (stored === "light") setIsDarkMode(false);
+    else setIsDarkMode(window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches);
+
+    const handler = (e: any) => {
+      if (e?.detail && typeof e.detail.isDark === "boolean") setIsDarkMode(e.detail.isDark);
+      else setIsDarkMode(localStorage.getItem("theme") === "dark");
+    };
+    window.addEventListener("theme-change", handler as EventListener);
+    return () => window.removeEventListener("theme-change", handler as EventListener);
+  }, []);
 
   const particlesInit = useCallback(async (engine: any) => {
     await loadSlim(engine);
@@ -81,7 +106,12 @@ export default function Home() {
         style={{ background: 'radial-gradient(circle, #3b82f6 0%, transparent 70%)', transform: 'translate(-50%, -50%)' }}
       ></div>
 
-      <div className={`fixed inset-0 -z-50 transition-colors ${isDarkMode ? 'duration-[300ms] bg-[#030712]' : 'duration-[2000ms] bg-gradient-to-br from-white to-blue-50'}`}></div>
+      <div className={`fixed inset-0 -z-50 transition-colors ${isDarkMode ? 'duration-[300ms] bg-[#030712]' : 'duration-[2000ms] bg-gradient-to-br from-slate-100 via-sky-100 to-cyan-200'}`}></div>
+      {!isDarkMode && (
+        <div className="fixed top-10 left-1/2 -translate-x-1/2 w-[520px] h-[520px] rounded-full opacity-70 pointer-events-none -z-20 blur-3xl"
+          style={{ background: 'radial-gradient(circle, rgba(56,189,248,0.18) 0%, transparent 55%)' }}
+        ></div>
+      )}
 
       {/* Theme switch moved to global layout */}
 
@@ -116,76 +146,229 @@ export default function Home() {
       )}
 
       <main className="relative z-10 max-w-7xl mx-auto px-6 py-16 flex flex-col gap-24">
-        <motion.section initial="hidden" animate="visible" variants={revealVariants} className="flex flex-col lg:flex-row items-center justify-center gap-16 lg:gap-24 min-h-[60vh] mt-10">
-          <div className="flex-1 text-center lg:text-right space-y-4 animate-[pulse_4s_ease-in-out_infinite]">
-            <h2 className={`text-3xl font-black uppercase transition-colors ${isDarkMode ? 'duration-[300ms] text-white' : 'duration-[2000ms] text-slate-800'}`}>The Engineer</h2>
-            <p className={`font-mono text-sm border-r-4 pr-4 transition-colors ${isDarkMode ? 'duration-[300ms] text-cyan-400 border-cyan-500' : 'duration-[2000ms] text-slate-600 border-blue-500'}`}>
-              Bridging the gap between practical software utility and engaging 2D tactical mechanics.
-              <br/><br/>
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.45 }}>
+          <motion.section
+            ref={heroRef}
+            initial="hidden"
+            animate={heroInView ? "visible" : "hidden"}
+            exit="hidden"
+            variants={revealVariants}
+            transition={{ duration: 0.75, ease: "easeInOut" }}
+            className="flex flex-col lg:flex-row items-center justify-between gap-6 lg:gap-10 min-h-[60vh] mt-10"
+          >
+            <div className="flex-1 lg:max-w-[34%] self-center text-center lg:text-right space-y-6 lg:flex lg:flex-col lg:justify-center lg:-mt-16">
+            <h2 className={`text-3xl font-black transition-colors ${isDarkMode ? 'duration-[300ms] text-white' : 'duration-[2000ms] text-slate-800'}`}>The Engineer</h2>
+            <p className={`font-sans text-base border-r-4 pr-4 transition-colors ${isDarkMode ? 'duration-[300ms] text-cyan-400 border-cyan-500' : 'duration-[2000ms] text-slate-800 border-blue-500'}`}>
               BS Computer Science
               <br/>Godot 4 Developer
               <br/>Interactive Media Specialist
               <br/>Frontend UI Developer
               <br/>GDScript Specialist
+              <span className={`block mt-4 text-xs italic ${isDarkMode ? 'text-slate-300/80' : 'text-slate-700'}`}>Bridging the gap between practical software utility and engaging 2D tactical mechanics.</span>
             </p>
           </div>
           
-          <div className="relative shrink-0">
-            <div className={`absolute -inset-4 rounded-full border-2 border-dashed animate-[spin_10s_linear_infinite] transition-colors ${isDarkMode ? 'duration-[300ms] border-cyan-500/50' : 'duration-[2000ms] border-blue-400'}`}></div>
-            <div className={`absolute -inset-8 rounded-full border-2 border-dotted animate-[spin_15s_linear_infinite_reverse] opacity-50 transition-colors ${isDarkMode ? 'duration-[300ms] border-sky-400/50' : 'duration-[2000ms] border-blue-300'}`}></div>
-            <div className={`w-56 h-56 md:w-72 md:h-72 rounded-full overflow-hidden border-4 relative z-10 flex items-center justify-center transition-all ${isDarkMode ? 'duration-[300ms] border-cyan-600 shadow-[0_0_60px_rgba(14,165,233,0.5)] bg-slate-900' : 'duration-[2000ms] border-blue-600 shadow-[0_0_40px_rgba(59,130,246,0.6)] bg-slate-100'}`}>
-              <Image src="/dustin-profile.jpg" alt="Dustin Lee A. Oliganga" width={300} height={300} className="w-full h-full object-cover"/>
+          <div className="shrink-0 flex flex-col items-center justify-center gap-3 overflow-visible">
+            <div className="relative overflow-visible">
+              <div className={`absolute -inset-4 rounded-full border-2 border-dashed animate-[spin_10s_linear_infinite] transition-colors ${isDarkMode ? 'duration-[300ms] border-cyan-500/50' : 'duration-[2000ms] border-blue-400'}`}></div>
+              <div className={`absolute -inset-8 rounded-full border-2 border-dotted animate-[spin_15s_linear_infinite_reverse] opacity-50 transition-colors ${isDarkMode ? 'duration-[300ms] border-sky-400/50' : 'duration-[2000ms] border-blue-300'}`}></div>
+              <div className={`relative w-56 h-56 md:w-72 md:h-72 rounded-full overflow-hidden border-4 z-10 flex items-center justify-center transition-all ${isDarkMode ? 'duration-[300ms] border-cyan-600 shadow-[0_0_60px_rgba(14,165,233,0.5)] bg-slate-900' : 'duration-[2000ms] border-blue-600 shadow-[0_0_40px_rgba(59,130,246,0.6)] bg-slate-100'}`}>
+                <Image src="/dustin-profile.jpg" alt="Dustin Lee A. Oliganga" width={300} height={300} className="w-full h-full object-cover"/>
+              </div>
+            </div>
+            <div className="text-center">
+              <p className="hero-name text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 via-sky-500 to-blue-500">Dustin Lee A. Oliganga</p>
             </div>
           </div>
 
-          <div className="flex-1 text-center lg:text-left space-y-4 animate-[pulse_5s_ease-in-out_infinite_reverse]">
-            <h2 className={`text-3xl font-black tracking-tighter uppercase transition-colors ${isDarkMode ? 'duration-[300ms] text-white' : 'duration-[2000ms] text-slate-800'}`}>The Leader</h2>
-            <p className={`font-mono text-sm border-l-4 pl-4 transition-colors ${isDarkMode ? 'duration-[300ms] text-cyan-400 border-cyan-500' : 'duration-[2000ms] text-slate-600 border-blue-500'}`}>
-              East-South leadership philosophy focused on sustainable, student-led innovation and collaboration.
-              <br/><br/>
-              CSS Mayor
-              <br/>CITE Congressman
-              <br/>Senator
-              <br/>Northern Campus SSC
+          <div className="flex-1 lg:max-w-[34%] self-center text-center lg:text-left space-y-6 lg:flex lg:flex-col lg:justify-center lg:-mt-16">
+            <h2 className={`text-3xl font-black tracking-tighter transition-colors ${isDarkMode ? 'duration-[300ms] text-white' : 'duration-[2000ms] text-slate-800'}`}>The Leader</h2>
+            <p className={`font-sans text-base border-l-4 pl-4 transition-colors ${isDarkMode ? 'duration-[300ms] text-cyan-400 border-cyan-500' : 'duration-[2000ms] text-slate-800 border-blue-500'}`}>
+              Former CSS Mayor
+              <br/>Former CITE Congressman
+              <br/>Former Student Adviser CSS
+              <br/>USSC Senator
               <br/>CSE Professional Passer
+              <span className={`block mt-4 text-xs italic ${isDarkMode ? 'text-slate-300/80' : 'text-slate-700'}`}>East-South leadership philosophy focused on sustainable, student-led innovation and collaboration.</span>
             </p>
           </div>
-        </motion.section>
+          </motion.section>
+        </motion.div>
 
-        <motion.section initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.2 }} variants={revealVariants} className={`backdrop-blur-md p-10 rounded-3xl border shadow-2xl relative overflow-hidden group transition-all ${isDarkMode ? 'duration-[300ms] bg-gradient-to-br from-slate-900 to-slate-950 border-blue-950' : 'duration-[2000ms] bg-gradient-to-br from-white to-blue-50 border-slate-200'}`}>
+        <motion.section
+          ref={projectsRef}
+          initial="hidden"
+          animate={projectsInView ? "visible" : "hidden"}
+          exit="hidden"
+          variants={revealVariants}
+          transition={{ duration: 0.75, ease: "easeInOut" }}
+          className={`backdrop-blur-md p-10 rounded-3xl border shadow-2xl relative overflow-hidden group transition-all ${isDarkMode ? 'duration-[300ms] bg-gradient-to-br from-slate-900 to-slate-950 border-blue-950' : 'duration-[2000ms] bg-gradient-to-br from-white via-slate-50 to-sky-100 border-slate-200'}`}
+        >
           <div className={`absolute top-0 left-0 w-full h-1 group-hover:scale-x-110 transition-transform duration-1000 origin-left ${isDarkMode ? 'bg-gradient-to-r from-cyan-600 to-blue-500' : 'bg-gradient-to-r from-blue-400 to-blue-600'}`}></div>
-          <h3 className={`text-2xl font-bold uppercase tracking-widest mb-6 transition-colors ${isDarkMode ? 'duration-[300ms] text-cyan-400' : 'duration-[2000ms] text-blue-600'}`}>01. Deployed Systems</h3>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {[1, 2, 3].map((i) => <div key={i} className={`border p-6 rounded-xl hover:-translate-y-3 transition-all duration-[2000ms] ${isDarkMode ? 'bg-slate-800/50 border-blue-900/40' : 'bg-white/50 border-slate-200 shadow-sm'}`}><h4 className={`text-xl font-bold transition-colors ${isDarkMode ? 'duration-[300ms] text-white' : 'duration-[2000ms] text-slate-800'}`}>PROJECT_0{i}</h4></div>)}
-          </div>
-        </motion.section>
-
-        <motion.section initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.2 }} variants={revealVariants}>
-          <h3 className={`text-2xl font-bold uppercase tracking-widest mb-6 transition-colors ${isDarkMode ? 'duration-[300ms] text-cyan-400' : 'duration-[2000ms] text-blue-600'}`}>02. Visual Matrix</h3>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div className={`col-span-2 row-span-2 rounded-2xl h-64 border-2 border-dashed flex items-center justify-center font-mono transition-colors ${isDarkMode ? 'duration-[300ms] bg-[#080f26]/40 border-blue-900/50 text-blue-700' : 'duration-[2000ms] bg-slate-200 border-slate-300 text-slate-400'}`}>GALLERY_IMG_01</div>
-            {[2, 3, 4].map(i => <div key={i} className={`rounded-2xl h-32 border-2 border-dashed flex items-center justify-center transition-colors ${isDarkMode ? 'duration-[300ms] bg-[#080f26]/40 border-blue-900/50' : 'duration-[2000ms] bg-slate-200 border-slate-300'}`}>IMG_0{i}</div>)}
-          </div>
-        </motion.section>
-
-        <motion.section initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.2 }} variants={revealVariants} className="mb-20">
-          <h3 className={`text-2xl font-bold uppercase tracking-widest mb-6 transition-colors ${isDarkMode ? 'duration-[300ms] text-cyan-400' : 'duration-[2000ms] text-blue-600'}`}>03. Achievements & CV</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-             <div className={`p-8 rounded-3xl border transition-all duration-[2000ms] ${isDarkMode ? 'bg-gradient-to-br from-slate-900 to-slate-950 border-blue-950' : 'bg-gradient-to-br from-white to-blue-50 border-slate-200'}`}>
-                <h4 className={`text-lg font-bold mb-4 transition-colors ${isDarkMode ? 'duration-[300ms] text-cyan-400' : 'duration-[2000ms] text-blue-600'}`}>Leadership & Experience</h4>
-                <div className={`space-y-4 font-mono text-sm border-l-2 ml-3 pl-6 border-blue-900/50`}>
-                   <p>CSS Mayor</p>
-                   <p>CITE Congressman</p>
-                   <p>Senator</p>
+          <h3 className={`text-2xl font-bold mb-6 transition-colors ${isDarkMode ? 'duration-[300ms] text-cyan-400' : 'duration-[2000ms] text-blue-600'}`}>01. Projects & Experience</h3>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <article className={`theme-box border p-6 rounded-3xl transition-all duration-[2000ms] ${isDarkMode ? 'bg-slate-800/60 border-blue-900/40' : 'bg-white border-slate-300 shadow-[0_20px_50px_-30px_rgba(14,165,233,0.45)]'}`}>
+              <div className="flex items-center justify-between gap-3 mb-4">
+                <div>
+                  <h4 className={`text-xl font-bold transition-colors ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>S.P.A.R.K. Learning Application</h4>
+                  <p className={`text-sm ${isDarkMode ? 'text-slate-300' : 'text-slate-900'}`}>ASL Gamified Web App</p>
                 </div>
-             </div>
-             <div className={`p-8 rounded-3xl border transition-all duration-[2000ms] ${isDarkMode ? 'bg-gradient-to-br from-slate-900 to-slate-950 border-blue-950' : 'bg-gradient-to-br from-white to-blue-50 border-slate-200'}`}>
-                <h4 className={`text-lg font-bold mb-4 transition-colors ${isDarkMode ? 'duration-[300ms] text-cyan-400' : 'duration-[2000ms] text-blue-600'}`}>Credentials</h4>
-                <ul className="space-y-4 font-mono text-sm">
-                  <li>Bachelor of Science in Computer Science</li>
-                  <li>Civil Service Examination (CSE) Passer</li>
+              </div>
+              <p className={`font-sans text-sm leading-7 ${isDarkMode ? 'text-slate-300' : 'text-slate-900'}`}>
+                A web-based gamified American Sign Language educational platform that includes an animated talking mascot named “Sparky” to guide learners through interactive lessons.
+              </p>
+            </article>
+
+            <article className={`theme-box border p-6 rounded-3xl transition-all duration-[2000ms] ${isDarkMode ? 'bg-slate-800/60 border-blue-900/40' : 'bg-white border-slate-300 shadow-[0_20px_50px_-30px_rgba(14,165,233,0.45)]'}`}>
+              <div className="flex items-center justify-between gap-3 mb-4">
+                <div>
+                  <h4 className={`text-xl font-bold transition-colors ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>Slimy Adventure</h4>
+                  <p className={`text-sm ${isDarkMode ? 'text-slate-300' : 'text-slate-900'}`}>3D Godot Game</p>
+                </div>
+              </div>
+              <p className={`font-sans text-sm leading-7 ${isDarkMode ? 'text-slate-300' : 'text-slate-900'}`}>
+                A 3D game built with Godot Engine featuring custom character state machines, movement physics, and dynamic enemy AI scripts to reinforce engaging gameplay and realistic action.
+              </p>
+            </article>
+
+            <article className={`theme-box border p-6 rounded-3xl transition-all duration-[2000ms] ${isDarkMode ? 'bg-slate-800/60 border-blue-900/40' : 'bg-white border-slate-300 shadow-[0_20px_50px_-30px_rgba(14,165,233,0.45)]'}`}>
+              <div className="flex items-center justify-between gap-3 mb-4">
+                <div>
+                  <h4 className={`text-xl font-bold transition-colors ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>Corruption Tactics</h4>
+                  <p className={`text-sm ${isDarkMode ? 'text-slate-300' : 'text-slate-900'}`}>2D Fighting Game</p>
+                </div>
+              </div>
+              <p className={`font-sans text-sm leading-7 ${isDarkMode ? 'text-slate-300' : 'text-slate-900'}`}>
+                A 2D fighting game exploring tactical combat mechanics, complex collision frame data, character state machines, and custom combat logic systems for responsive action.
+              </p>
+            </article>
+          </div>
+        </motion.section>
+
+        <motion.section
+          ref={galleryRef}
+          initial="hidden"
+          animate={galleryInView ? "visible" : "hidden"}
+          exit="hidden"
+          variants={revealVariants}
+          transition={{ duration: 0.75, ease: "easeInOut" }}
+        >
+          <h3 className={`text-2xl font-bold mb-6 transition-colors ${isDarkMode ? 'duration-[300ms] text-cyan-400' : 'duration-[2000ms] text-blue-600'}`}>02. Visual matrix</h3>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <article className={`theme-box col-span-2 row-span-2 rounded-2xl border-2 border-dashed p-6 transition-colors ${isDarkMode ? 'duration-[300ms] bg-[#080f26]/40 border-blue-900/50 text-blue-700' : 'duration-[2000ms] bg-white border-slate-200 text-slate-800 shadow-sm'}`}>
+              <h4 className="text-xl font-semibold mb-3">Systems & UI concepts</h4>
+              <p className={`text-sm leading-6 ${isDarkMode ? 'text-slate-300' : 'text-slate-900'}`}>
+                Design explorations for polished overlays, HUD layouts, and readable visual systems that support gameplay clarity.
+              </p>
+            </article>
+            <article className={`theme-box rounded-2xl border-2 border-dashed p-6 transition-colors ${isDarkMode ? 'duration-[300ms] bg-[#080f26]/40 border-blue-900/50 text-blue-200' : 'duration-[2000ms] bg-white border-slate-300 text-slate-900 shadow-sm'}`}>
+              <h4 className="text-lg font-semibold mb-2">Prototype visuals</h4>
+              <p className={`text-sm leading-6 ${isDarkMode ? 'text-slate-300' : 'text-slate-900'}`}>
+                Early in-engine assets and motion explorations that show character movement, scene flow, and interaction polish.
+              </p>
+            </article>
+            <article className={`theme-box rounded-2xl border-2 border-dashed p-6 transition-colors ${isDarkMode ? 'duration-[300ms] bg-[#080f26]/40 border-blue-900/50 text-blue-200' : 'duration-[2000ms] bg-white border-slate-300 text-slate-900 shadow-sm'}`}>
+              <h4 className="text-lg font-semibold mb-2">Gameplay mood</h4>
+              <p className={`text-sm leading-6 ${isDarkMode ? 'text-slate-300' : 'text-slate-900'}`}>
+                Visual mood boards and colour studies that explore atmosphere, lighting, and player focus for every scene.
+              </p>
+            </article>
+            <article className={`theme-box rounded-2xl border-2 border-dashed p-6 transition-colors ${isDarkMode ? 'duration-[300ms] bg-[#080f26]/40 border-blue-900/50 text-blue-200' : 'duration-[2000ms] bg-white border-slate-300 text-slate-900 shadow-sm'}`}>
+              <h4 className="text-lg font-semibold mb-2">Design process</h4>
+              <p className={`text-sm leading-6 ${isDarkMode ? 'text-slate-300' : 'text-slate-900'}`}>
+                Iteration notes, wireframes, and feature breakdowns showing how each visual system was planned and refined.
+              </p>
+            </article>
+          </div>
+        </motion.section>
+
+        <motion.section
+          ref={achievementsRef}
+          initial="hidden"
+          animate={achievementsInView ? "visible" : "hidden"}
+          exit="hidden"
+          variants={revealVariants}
+          transition={{ duration: 0.75, ease: "easeInOut" }}
+          className="mb-20"
+        >
+          <h3 className={`text-2xl font-bold mb-6 transition-colors ${isDarkMode ? 'duration-[300ms] text-cyan-400' : 'duration-[2000ms] text-blue-600'}`}>03. Achievements</h3>
+          <div className="grid gap-8 lg:grid-cols-[1.4fr_0.9fr]">
+            <div className="grid gap-6">
+              <section className={`theme-box p-8 rounded-3xl border transition-all duration-[2000ms] ${isDarkMode ? 'bg-gradient-to-br from-slate-900 to-slate-950 border-blue-950' : 'bg-gradient-to-br from-white to-blue-50 border-slate-200'}`}>
+                <h4 className={`text-lg font-bold mb-4 transition-colors ${isDarkMode ? 'duration-[300ms] text-cyan-400' : 'duration-[2000ms] text-blue-600'}`}>Education</h4>
+                <div className={`space-y-3 font-sans text-sm leading-6 ${isDarkMode ? 'text-slate-300' : 'text-slate-900'}`}>
+                  <p><span className="font-semibold">BS Computer Science</span> — Nueva Vizcaya State University (NVSU), Bayombong, Nueva Vizcaya | 2023 – Present</p>
+                  <p><span className="font-semibold">Senior High School (STEM)</span> — Saint Theresita&apos;s Academy (STA), Aritao, Nueva Vizcaya | 2021 – 2023</p>
+                  <p><span className="font-semibold">Junior High School</span> — Immaculate Conception Academy (ICA), Aritao, Nueva Vizcaya | 2017 – 2021</p>
+                  <p><span className="font-semibold">Elementary Education</span> — Bone North Elementary School (BNES), Aritao, Nueva Vizcaya | 2011 – 2017</p>
+                </div>
+              </section>
+
+              <section className={`theme-box p-8 rounded-3xl border transition-all duration-[2000ms] ${isDarkMode ? 'bg-gradient-to-br from-slate-900 to-slate-950 border-blue-950' : 'bg-gradient-to-br from-white to-blue-50 border-slate-200'}`}>
+                <h4 className={`text-lg font-bold mb-4 transition-colors ${isDarkMode ? 'duration-[300ms] text-cyan-400' : 'duration-[2000ms] text-blue-600'}`}>Qualifications</h4>
+                <p className={`font-sans text-sm leading-7 ${isDarkMode ? 'text-slate-300' : 'text-slate-900'}`}>
+                  A dynamic, visionary, and results-driven student leader with a deep-rooted commitment to service and excellence. Grounded in an empathetic leadership style, I bridge technical innovation and social responsibility while managing high-level governance roles and international technical engagements.
+                </p>
+              </section>
+
+              <section className={`theme-box p-8 rounded-3xl border transition-all duration-[2000ms] ${isDarkMode ? 'bg-gradient-to-br from-slate-900 to-slate-950 border-blue-950' : 'bg-gradient-to-br from-white to-blue-50 border-slate-200'}`}>
+                <div className="grid gap-6 md:grid-cols-2">
+                  <div>
+                    <h4 className={`text-lg font-bold mb-4 transition-colors ${isDarkMode ? 'duration-[300ms] text-cyan-400' : 'duration-[2000ms] text-blue-600'}`}>Leadership & Experience</h4>
+                    <ul className={`space-y-3 font-sans text-sm leading-6 ${isDarkMode ? 'text-slate-300' : 'text-slate-900'}`}>
+                      <li>Student Adviser, Computer Studies Society (CSS), NVSU | 2026 – Present</li>
+                      <li>Business Manager, Nueva Vizcaya Filmmakers Association | 2025 – Present</li>
+                      <li>Congressman, CITE USSC, NVSU | 2025 – 2026</li>
+                      <li>Mayor, Computer Studies Society (CSS), NVSU | 2024 – 2025</li>
+                    </ul>
+                  </div>
+                  <div>
+                    <h4 className={`text-lg font-bold mb-4 transition-colors ${isDarkMode ? 'duration-[300ms] text-cyan-400' : 'duration-[2000ms] text-blue-600'}`}>Achievements</h4>
+                    <ul className={`space-y-3 font-sans text-sm leading-6 ${isDarkMode ? 'text-slate-300' : 'text-slate-900'}`}>
+                      <li>Career Service Professional Eligible (CSE-PPT Passer)</li>
+                      <li>Consistent Dean’s Lister, NVSU | 2023 – 2026</li>
+                      <li>Lead Systems Implementer, University-Wide Mass Work Activity | Feb 2026</li>
+                      <li>Verified Badge: Identifying Your Leadership Strengths, KMUTT | Jan 2026</li>
+                      <li>Champion, Nueva Vizcaya Film Festival | 2025</li>
+                    </ul>
+                  </div>
+                </div>
+              </section>
+
+              <section className={`theme-box p-8 rounded-3xl border transition-all duration-[2000ms] ${isDarkMode ? 'bg-gradient-to-br from-slate-900 to-slate-950 border-blue-950' : 'bg-gradient-to-br from-white to-blue-50 border-slate-200'}`}>
+                <h4 className={`text-lg font-bold mb-4 transition-colors ${isDarkMode ? 'duration-[300ms] text-cyan-400' : 'duration-[2000ms] text-blue-600'}`}>Conferences & Seminars</h4>
+                <div className={`grid gap-6 sm:grid-cols-2 font-sans text-sm leading-6 ${isDarkMode ? 'text-slate-300' : 'text-slate-900'}`}>
+                  <div>
+                    <p className="font-semibold">International</p>
+                    <ul className="mt-3 space-y-2">
+                      <li>GCI World 2026: Data Science and AI | Tokyo, Japan</li>
+                      <li>Dunong 2026 Participant | JPN</li>
+                      <li>Leadership Strengths Workshop | Thailand | Jan 2026</li>
+                    </ul>
+                  </div>
+                  <div>
+                    <p className="font-semibold">National & Regional</p>
+                    <ul className="mt-3 space-y-2">
+                      <li>DYCI ALAB Robotics & VEX Seminar | 2026</li>
+                      <li>Western Digital Technical Seminar | 2026</li>
+                      <li>Hytec Power Industrial Technology Conference | 2026</li>
+                      <li>Regional Science and Technology Week '25 | NVSU</li>
+                    </ul>
+                  </div>
+                </div>
+              </section>
+            </div>
+
+            <aside className="space-y-6">
+              <div className={`theme-box p-8 rounded-3xl border transition-all duration-[2000ms] ${isDarkMode ? 'bg-gradient-to-br from-slate-900 to-slate-950 border-blue-950' : 'bg-gradient-to-br from-white to-blue-50 border-slate-200'}`}>
+                <h4 className={`text-lg font-bold mb-4 transition-colors ${isDarkMode ? 'duration-[300ms] text-cyan-400' : 'duration-[2000ms] text-blue-600'}`}>Volunteerism & Activities</h4>
+                <ul className={`space-y-3 font-sans text-sm leading-6 ${isDarkMode ? 'text-slate-300' : 'text-slate-900'}`}>
+                  <li>Participant / Volunteer DAR Pelikularyo | 2025 – 2026</li>
+                  <li>Organizer / Volunteer CSS Outreach Program – Paitan Labbu Elementary School</li>
+                  <li>Organizer / Volunteer CSS Tree Planting Activity – Busilac, Bayombong | Nov 2024</li>
                 </ul>
-             </div>
+              </div>
+            </aside>
           </div>
         </motion.section>
       </main>

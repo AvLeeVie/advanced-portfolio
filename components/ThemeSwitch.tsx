@@ -27,6 +27,14 @@ export default function ThemeSwitch() {
     } catch (e) {
       // ignore
     }
+    // notify other parts of the app about theme changes
+    try {
+      if (typeof window !== "undefined") {
+        window.dispatchEvent(new CustomEvent("theme-change", { detail: { isDark } }));
+      }
+    } catch (e) {
+      // ignore
+    }
   }, [isDark]);
 
   return (
@@ -56,9 +64,8 @@ export default function ThemeSwitch() {
           <div className="theme-switch__clouds"></div>
           <div className="theme-switch__stars-container">
             <svg fill="none" viewBox="0 0 144 55" xmlns="http://www.w3.org/2000/svg">
-                <svg fill="none" viewBox="0 0 144 55" xmlns="http://www.w3.org/2000/svg">
-                  <path fill="currentColor" d="M2 27a2 2 0 1 1 0-4 2 2 0 0 1 0 4zm20-10a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm30 5a1 1 0 1 1 0-2 1 1 0 0 1 0 2z" />
-                </svg>
+              <path fill="currentColor" d="M2 27a2 2 0 1 1 0-4 2 2 0 0 1 0 4zm20-10a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm30 5a1 1 0 1 1 0-2 1 1 0 0 1 0 2z" />
+            </svg>
           </div>
           <div className="theme-switch__circle-container">
             <div className="theme-switch__sun-moon-container">
