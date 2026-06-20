@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import Particles, { initParticlesEngine } from "@tsparticles/react";
 import { loadSlim } from "@tsparticles/slim";
 import Image from 'next/image';
+import { motion } from 'framer-motion';
 
 export default function Home() {
   const [init, setInit] = useState(false);
@@ -18,7 +19,6 @@ export default function Home() {
     });
   }, []);
 
-  // Techy particle configuration (continuous movement)
   const particleOptions = {
     background: { color: { value: "#ffffff" } },
     fpsLimit: 120,
@@ -33,11 +33,17 @@ export default function Home() {
       links: { color: "#3b82f6", distance: 150, enable: true, opacity: 0.4, width: 1 },
       move: { enable: true, speed: 2, direction: "none" as const, outModes: { default: "bounce" as const } },
       number: { value: 100, density: { enable: true, area: 800 } },
-      opacity: { value: 0.5, animation: { enable: true, speed: 1, minimumValue: 0.1 } }, // Twinkling effect
+      opacity: { value: 0.5, animation: { enable: true, speed: 1, minimumValue: 0.1 } }, 
       shape: { type: "circle" },
       size: { value: { min: 1, max: 3 } },
     },
     detectRetina: true,
+  };
+
+  // Shared animation settings for scroll reveals
+  const revealVariants = {
+    hidden: { opacity: 0, y: 50 },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.8, ease: "easeOut" } }
   };
 
   return (
@@ -50,15 +56,18 @@ export default function Home() {
         <Particles id="tsparticles" options={particleOptions} className="absolute inset-0 -z-10" />
       )}
 
-      {/* Grid overlay for tech vibe */}
       <div className="absolute inset-0 bg-[linear-gradient(to_right,#e2e8f0_1px,transparent_1px),linear-gradient(to_bottom,#e2e8f0_1px,transparent_1px)] bg-[size:40px_40px] opacity-20 -z-10 pointer-events-none"></div>
 
       <main className="relative z-10 max-w-7xl mx-auto px-6 py-16 flex flex-col gap-24">
         
-        {/* --- HERO: 3-Column Center Layout --- */}
-        <section className="flex flex-col lg:flex-row items-center justify-center gap-12 lg:gap-8 min-h-[60vh]">
+        {/* HERO SECTION - Fades in immediately on load */}
+        <motion.section 
+          initial="hidden"
+          animate="visible"
+          variants={revealVariants}
+          className="flex flex-col lg:flex-row items-center justify-center gap-12 lg:gap-8 min-h-[60vh]"
+        >
           
-          {/* Left Intro */}
           <div className="flex-1 text-center lg:text-right space-y-4 animate-[pulse_4s_ease-in-out_infinite]">
             <h2 className="text-3xl font-black text-slate-800 tracking-tighter uppercase">The Engineer</h2>
             <p className="text-slate-600 font-mono text-sm border-r-4 border-blue-500 pr-4">
@@ -71,22 +80,21 @@ export default function Home() {
             </p>
           </div>
 
-          {/* Center Portrait (Glowing & Floating) */}
           <div className="relative shrink-0 animate-[bounce_4s_infinite]">
-             {/* Techy rotating rings behind portrait */}
             <div className="absolute inset-0 rounded-full border-4 border-blue-200 border-dashed animate-[spin_10s_linear_infinite] scale-110"></div>
             <div className="absolute inset-0 rounded-full border-4 border-blue-400 border-dotted animate-[spin_15s_linear_infinite_reverse] scale-125 opacity-50"></div>
             
-            {/* The Portrait Frame */}
             <div className="w-56 h-56 md:w-72 md:h-72 rounded-full overflow-hidden border-4 border-blue-600 relative z-10 shadow-[0_0_40px_rgba(59,130,246,0.6)] bg-slate-100 flex items-center justify-center">
-              {/* Replace the div below with an <Image /> tag once you have your photo */}
-              <span className="font-mono text-blue-500 text-sm font-bold tracking-widest text-center px-4">
-                [INSERT DUSTIN_IMG.PNG]
-              </span>
+              <Image 
+                src="/dustin-profile.jpg" 
+                alt="Dustin Lee A. Oliganga" 
+                width={300} 
+                height={300} 
+                className="w-full h-full object-cover"
+              />
             </div>
           </div>
 
-          {/* Right Intro */}
           <div className="flex-1 text-center lg:text-left space-y-4 animate-[pulse_5s_ease-in-out_infinite_reverse]">
             <h2 className="text-3xl font-black text-slate-800 tracking-tighter uppercase">The Leader</h2>
             <p className="text-slate-600 font-mono text-sm border-l-4 border-blue-500 pl-4">
@@ -99,11 +107,16 @@ export default function Home() {
             </p>
           </div>
 
-        </section>
+        </motion.section>
 
-
-        {/* --- GITHUB & PROJECTS SECTION --- */}
-        <section className="bg-white/80 backdrop-blur-md p-10 rounded-3xl border border-slate-200 shadow-2xl relative overflow-hidden group">
+        {/* PROJECTS SECTION - Reveals on scroll */}
+        <motion.section 
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.2 }}
+          variants={revealVariants}
+          className="bg-white/80 backdrop-blur-md p-10 rounded-3xl border border-slate-200 shadow-2xl relative overflow-hidden group"
+        >
           <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-400 to-blue-600 group-hover:scale-x-110 transition-transform duration-1000 origin-left"></div>
           
           <div className="flex justify-between items-end mb-10 border-b-2 border-slate-100 pb-4">
@@ -111,13 +124,12 @@ export default function Home() {
               <span className="w-4 h-4 bg-blue-600 animate-ping rounded-full inline-block"></span>
               Deployed Systems
             </h3>
-            <a href="https://github.com" className="font-mono text-blue-600 hover:text-blue-800 transition-colors font-bold flex items-center gap-2">
+            <a href="https://github.com/YOUR_GITHUB_USERNAME_HERE" className="font-mono text-blue-600 hover:text-blue-800 transition-colors font-bold flex items-center gap-2">
               /GITHUB_REPO <span className="text-xl">↗</span>
             </a>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {/* Project Cards with hover-lift */}
             {[
               { title: "Z.O.O.M.T.A.P.", desc: "Zero-contact Optimized On-site Monitoring Tap-Based Attendance Platform (RFID/NFC).", tags: ["Hardware", "Systems"] },
               { title: "Agawan Base", desc: "Multiplayer 2D tactical adventure digitalizing traditional Philippine culture.", tags: ["Godot", "GDScript"] },
@@ -134,25 +146,28 @@ export default function Home() {
               </div>
             ))}
           </div>
-        </section>
+        </motion.section>
 
-
-        {/* --- GALLERY SECTION --- */}
-        <section className="mb-20">
+        {/* GALLERY SECTION - Reveals on scroll */}
+        <motion.section 
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.2 }}
+          variants={revealVariants}
+          className="mb-20"
+        >
           <h3 className="text-4xl font-black tracking-tight mb-10 flex items-center gap-4">
              <span className="w-4 h-4 bg-slate-800 rounded-sm inline-block animate-[spin_3s_linear_infinite]"></span>
              Visual Matrix
           </h3>
           
-          {/* Masonry-style Grid */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {/* Gallery Placeholders - Add images later */}
             <div className="col-span-2 row-span-2 bg-slate-200 rounded-2xl h-64 border-2 border-dashed border-slate-300 flex items-center justify-center text-slate-400 font-mono text-sm hover:border-blue-500 transition-colors">GALLERY_IMG_01</div>
             <div className="bg-slate-200 rounded-2xl h-32 border-2 border-dashed border-slate-300 flex items-center justify-center text-slate-400 font-mono text-sm hover:border-blue-500 transition-colors">IMG_02</div>
             <div className="bg-slate-200 rounded-2xl h-32 border-2 border-dashed border-slate-300 flex items-center justify-center text-slate-400 font-mono text-sm hover:border-blue-500 transition-colors">IMG_03</div>
             <div className="col-span-2 bg-slate-200 rounded-2xl h-32 border-2 border-dashed border-slate-300 flex items-center justify-center text-slate-400 font-mono text-sm hover:border-blue-500 transition-colors">IMG_04_WIDE</div>
           </div>
-        </section>
+        </motion.section>
 
       </main>
     </div>
