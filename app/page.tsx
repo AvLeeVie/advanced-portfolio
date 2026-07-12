@@ -86,7 +86,7 @@ export default function Home() {
   return (
     <div className={`relative min-h-screen font-sans overflow-x-hidden transition-colors ${isDarkMode ? 'duration-[300ms]' : 'duration-[2000ms]'} ${isDarkMode ? 'text-slate-100' : 'text-slate-900'}`}>
       <Head>
-        <title>Dustin Lee A. Oliganga | Tech Portfolio</title>
+        <title>Dustin Oliganga</title>
         <style>{`
           .theme-switch { --toggle-size: 20px; --container-width: 5.625em; --container-height: 2.5em; --container-radius: 0.38em; --container-light-bg: #5caad4; --container-night-bg: #1b1e36; --circle-container-diameter: 3.375em; --sun-moon-diameter: 2.125em; --sun-bg: #f5c518; --moon-bg: #d8d4c0; --spot-color: #9b9787; --circle-container-offset: calc((var(--circle-container-diameter) - var(--container-height)) / 2 * -1); display: inline-block; }
           @media (max-width: 640px) {
@@ -264,14 +264,14 @@ export default function Home() {
           transition={{ duration: 0.75, ease: "easeInOut" }}
         >
           <h3 className={`text-xl sm:text-2xl font-bold mb-4 sm:mb-6 transition-colors ${isDarkMode ? 'duration-[300ms] text-cyan-400' : 'duration-[2000ms] text-blue-600'}`}>02. Visual matrix</h3>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
-            <article className={`theme-box sm:col-span-2 sm:row-span-2 rounded-2xl border-2 border-dashed p-4 sm:p-6 transition-colors ${isDarkMode ? 'duration-[300ms] bg-[#080f26]/40 border-blue-900/50 text-blue-700' : 'duration-[2000ms] bg-white border-slate-200 text-slate-800 shadow-sm'}`}>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <article className={`theme-box sm:col-span-2 sm:row-span-1 lg:col-span-2 lg:row-span-2 rounded-2xl border-2 border-dashed p-4 sm:p-6 transition-colors ${isDarkMode ? 'duration-[300ms] bg-[#080f26]/40 border-blue-900/50 text-blue-700' : 'duration-[2000ms] bg-white border-slate-200 text-slate-800 shadow-sm'}`}>
               <h4 className="text-xl font-semibold mb-3">Systems & UI concepts</h4>
               <p className={`text-sm leading-6 ${isDarkMode ? 'text-slate-300' : 'text-slate-900'}`}>
                 Design explorations for polished overlays, HUD layouts, and readable visual systems that support gameplay clarity.
               </p>
             </article>
-            <article className={`theme-box rounded-2xl border-2 border-dashed p-6 transition-colors ${isDarkMode ? 'duration-[300ms] bg-[#080f26]/40 border-blue-900/50 text-blue-200' : 'duration-[2000ms] bg-white border-slate-300 text-slate-900 shadow-sm'}`}>
+            <article className={`theme-box rounded-2xl border-2 border-dashed p-4 sm:p-6 transition-colors ${isDarkMode ? 'duration-[300ms] bg-[#080f26]/40 border-blue-900/50 text-blue-200' : 'duration-[2000ms] bg-white border-slate-300 text-slate-900 shadow-sm'}`}>
               <h4 className="text-lg font-semibold mb-2">Prototype visuals</h4>
               <p className={`text-sm leading-6 ${isDarkMode ? 'text-slate-300' : 'text-slate-900'}`}>
                 Early in-engine assets and motion explorations that show character movement, scene flow, and interaction polish.
