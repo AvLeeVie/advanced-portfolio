@@ -9,6 +9,10 @@ import { motion, useInView } from 'framer-motion';
 
 export default function Home() {
   const [isDarkMode, setIsDarkMode] = useState(false);
+  const [cursorPosition, setCursorPosition] = useState(() =>
+    typeof window !== "undefined" ? { x: window.innerWidth / 2, y: window.innerHeight / 2 } : { x: 0, y: 0 }
+  );
+  const [isCursorActive, setIsCursorActive] = useState(true);
   const heroRef = useRef<HTMLDivElement>(null);
   const projectsRef = useRef<HTMLDivElement>(null);
   const galleryRef = useRef<HTMLDivElement>(null);
@@ -34,6 +38,55 @@ export default function Home() {
     window.addEventListener("theme-change", handler as EventListener);
     return () => window.removeEventListener("theme-change", handler as EventListener);
   }, []);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    let idleTimer: number | undefined;
+
+    const handlePointerMove = (event: MouseEvent) => {
+      setCursorPosition({ x: event.clientX, y: event.clientY });
+      setIsCursorActive(true);
+      window.clearTimeout(idleTimer);
+      idleTimer = window.setTimeout(() => setIsCursorActive(false), 1200);
+    };
+
+    const handlePointerLeave = () => {
+      setIsCursorActive(false);
+    };
+
+    window.addEventListener("mousemove", handlePointerMove);
+    window.addEventListener("mouseleave", handlePointerLeave);
+
+    return () => {
+      window.clearTimeout(idleTimer);
+      window.removeEventListener("mousemove", handlePointerMove);
+      window.removeEventListener("mouseleave", handlePointerLeave);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    if (isCursorActive) return;
+
+    let animationFrame = 0;
+    let angle = 0;
+
+    const drift = () => {
+      setCursorPosition((prev) => {
+        const radius = 90 + Math.sin(angle * 1.4) * 35;
+        const nextX = window.innerWidth / 2 + Math.cos(angle) * radius;
+        const nextY = window.innerHeight / 2 + Math.sin(angle * 0.8) * radius * 0.6;
+        angle += 0.03;
+        return { x: nextX, y: nextY };
+      });
+      animationFrame = window.requestAnimationFrame(drift);
+    };
+
+    animationFrame = window.requestAnimationFrame(drift);
+    return () => window.cancelAnimationFrame(animationFrame);
+  }, [isCursorActive]);
 
   const particlesInit = useCallback(async (engine: any) => {
     await loadSlim(engine);
@@ -124,13 +177,13 @@ export default function Home() {
       )}
 
       <header className="sticky top-0 z-40 w-full px-3 pt-3 sm:px-4 sm:pt-4">
-        <div className="mx-auto flex max-w-7xl items-center justify-between rounded-full border border-white/50 bg-white/60 px-3 py-2 shadow-[0_8px_30px_rgba(15,23,42,0.08)] backdrop-blur-xl transition-all duration-300 dark:border-slate-700/60 dark:bg-slate-950/60 dark:shadow-[0_8px_30px_rgba(2,6,23,0.35)]">
-          <span className="text-xs font-semibold uppercase tracking-[0.3em] text-slate-900 dark:text-slate-100 sm:text-sm">Dustin Oliganga</span>
+        <div className={`mx-auto flex max-w-7xl items-center justify-between rounded-full border px-3 py-2 pr-16 shadow-[0_8px_30px_rgba(15,23,42,0.08)] backdrop-blur-xl transition-all duration-300 sm:pr-20 ${isDarkMode ? 'border-slate-700/60 bg-slate-950/70 text-slate-100 shadow-[0_8px_30px_rgba(2,6,23,0.35)]' : 'border-white/50 bg-white/75 text-slate-900'}`}>
+          <span className={`text-xs font-semibold uppercase tracking-[0.3em] sm:text-sm ${isDarkMode ? 'text-slate-100' : 'text-slate-900'}`}>Dustin Oliganga</span>
           <nav className="flex flex-wrap items-center justify-end gap-1.5 text-xs sm:gap-2 sm:text-sm">
-            <a href="#frontpage" className="rounded-full px-2.5 py-1 text-slate-700 transition-all duration-300 hover:bg-cyan-500/10 hover:text-cyan-700 dark:text-slate-200 dark:hover:bg-cyan-400/10 dark:hover:text-cyan-300 sm:px-3">Front page</a>
-            <a href="#about" className="rounded-full px-2.5 py-1 text-slate-700 transition-all duration-300 hover:bg-cyan-500/10 hover:text-cyan-700 dark:text-slate-200 dark:hover:bg-cyan-400/10 dark:hover:text-cyan-300 sm:px-3">About</a>
-            <a href="#projects" className="rounded-full px-2.5 py-1 text-slate-700 transition-all duration-300 hover:bg-cyan-500/10 hover:text-cyan-700 dark:text-slate-200 dark:hover:bg-cyan-400/10 dark:hover:text-cyan-300 sm:px-3">Projects</a>
-            <a href="#achievements" className="rounded-full px-2.5 py-1 text-slate-700 transition-all duration-300 hover:bg-cyan-500/10 hover:text-cyan-700 dark:text-slate-200 dark:hover:bg-cyan-400/10 dark:hover:text-cyan-300 sm:px-3">Achievements</a>
+            <a href="#frontpage" className={`rounded-full px-2.5 py-1 transition-all duration-300 sm:px-3 ${isDarkMode ? 'text-slate-200 hover:bg-cyan-400/10 hover:text-cyan-300' : 'text-slate-700 hover:bg-cyan-500/10 hover:text-cyan-700'}`}>Front page</a>
+            <a href="#about" className={`rounded-full px-2.5 py-1 transition-all duration-300 sm:px-3 ${isDarkMode ? 'text-slate-200 hover:bg-cyan-400/10 hover:text-cyan-300' : 'text-slate-700 hover:bg-cyan-500/10 hover:text-cyan-700'}`}>About</a>
+            <a href="#projects" className={`rounded-full px-2.5 py-1 transition-all duration-300 sm:px-3 ${isDarkMode ? 'text-slate-200 hover:bg-cyan-400/10 hover:text-cyan-300' : 'text-slate-700 hover:bg-cyan-500/10 hover:text-cyan-700'}`}>Projects</a>
+            <a href="#achievements" className={`rounded-full px-2.5 py-1 transition-all duration-300 sm:px-3 ${isDarkMode ? 'text-slate-200 hover:bg-cyan-400/10 hover:text-cyan-300' : 'text-slate-700 hover:bg-cyan-500/10 hover:text-cyan-700'}`}>Achievements</a>
           </nav>
         </div>
       </header>
@@ -144,6 +197,16 @@ export default function Home() {
         options={isDarkMode ? darkParticleOptions : lightParticleOptions}
         className="fixed inset-0 -z-40"
       />
+
+      <div
+        aria-hidden="true"
+        className={`pointer-events-none fixed z-30 h-11 w-11 rounded-[45%] border border-cyan-300/70 bg-cyan-400/20 shadow-[0_0_40px_rgba(34,211,238,0.35)] backdrop-blur-md transition-all duration-200 sm:h-12 sm:w-12 ${isCursorActive ? 'scale-100' : 'scale-90 opacity-90'}`}
+        style={{ left: cursorPosition.x, top: cursorPosition.y, transform: 'translate(-50%, -50%)' }}
+      >
+        <div className="absolute inset-0 rounded-[45%] border border-white/40" />
+        <div className="absolute left-1/2 top-1/2 h-2.5 w-2.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-cyan-200/90" />
+        <div className={`absolute left-1/2 top-[105%] h-5 w-1 -translate-x-1/2 rounded-full bg-cyan-300/70 blur-[2px] ${isCursorActive ? 'opacity-0' : 'opacity-100'}`} />
+      </div>
 
       {isDarkMode && (
         <div className="hidden md:block fixed -bottom-40 -right-20 w-[640px] h-[640px] md:w-[900px] md:h-[900px] pointer-events-none -z-30 flex items-center justify-center translate-x-1/4 translate-y-1/4">
