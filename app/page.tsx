@@ -9,6 +9,10 @@ import { motion, useInView } from 'framer-motion';
 
 export default function Home() {
   const [isDarkMode, setIsDarkMode] = useState(false);
+  const [cursorPosition, setCursorPosition] = useState(() =>
+    typeof window !== "undefined" ? { x: window.innerWidth / 2, y: window.innerHeight / 2 } : { x: 0, y: 0 }
+  );
+  const [isCursorActive, setIsCursorActive] = useState(true);
   const heroRef = useRef<HTMLDivElement>(null);
   const projectsRef = useRef<HTMLDivElement>(null);
   const galleryRef = useRef<HTMLDivElement>(null);
@@ -34,6 +38,55 @@ export default function Home() {
     window.addEventListener("theme-change", handler as EventListener);
     return () => window.removeEventListener("theme-change", handler as EventListener);
   }, []);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    let idleTimer: number | undefined;
+
+    const handlePointerMove = (event: MouseEvent) => {
+      setCursorPosition({ x: event.clientX, y: event.clientY });
+      setIsCursorActive(true);
+      window.clearTimeout(idleTimer);
+      idleTimer = window.setTimeout(() => setIsCursorActive(false), 1200);
+    };
+
+    const handlePointerLeave = () => {
+      setIsCursorActive(false);
+    };
+
+    window.addEventListener("mousemove", handlePointerMove);
+    window.addEventListener("mouseleave", handlePointerLeave);
+
+    return () => {
+      window.clearTimeout(idleTimer);
+      window.removeEventListener("mousemove", handlePointerMove);
+      window.removeEventListener("mouseleave", handlePointerLeave);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    if (isCursorActive) return;
+
+    let animationFrame = 0;
+    let angle = 0;
+
+    const drift = () => {
+      setCursorPosition((prev) => {
+        const radius = 90 + Math.sin(angle * 1.4) * 35;
+        const nextX = window.innerWidth / 2 + Math.cos(angle) * radius;
+        const nextY = window.innerHeight / 2 + Math.sin(angle * 0.8) * radius * 0.6;
+        angle += 0.03;
+        return { x: nextX, y: nextY };
+      });
+      animationFrame = window.requestAnimationFrame(drift);
+    };
+
+    animationFrame = window.requestAnimationFrame(drift);
+    return () => window.cancelAnimationFrame(animationFrame);
+  }, [isCursorActive]);
 
   const particlesInit = useCallback(async (engine: any) => {
     await loadSlim(engine);
@@ -157,14 +210,16 @@ export default function Home() {
 
       <main className="relative z-10 max-w-7xl mx-auto px-3 sm:px-6 py-6 sm:py-8 md:py-16 flex flex-col gap-8 sm:gap-14 md:gap-24 pt-14 sm:pt-10">
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.45 }}>
+          <div id="about" className="absolute -top-28" aria-hidden="true"></div>
           <motion.section
+            id="frontpage"
             ref={heroRef}
             initial="hidden"
             animate={heroInView ? "visible" : "hidden"}
             exit="hidden"
             variants={revealVariants}
             transition={{ duration: 0.75, ease: "easeInOut" }}
-            className="flex flex-col lg:flex-row items-center justify-between gap-5 sm:gap-6 lg:gap-10 min-h-auto sm:min-h-[60vh] mt-4 sm:mt-10"
+            className="scroll-mt-28 flex flex-col lg:flex-row items-center justify-between gap-5 sm:gap-6 lg:gap-10 min-h-auto sm:min-h-[60vh] mt-4 sm:mt-10"
           >
             <div className="w-full flex-1 lg:max-w-[34%] self-center text-center lg:text-right space-y-3 sm:space-y-6 lg:flex lg:flex-col lg:justify-center lg:-mt-16">
             <h2 className={`text-2xl sm:text-3xl font-black transition-colors ${isDarkMode ? 'duration-[300ms] text-white' : 'duration-[2000ms] text-slate-800'}`}>The Engineer</h2>
@@ -206,13 +261,14 @@ export default function Home() {
         </motion.div>
 
         <motion.section
+          id="projects"
           ref={projectsRef}
           initial="hidden"
           animate={projectsInView ? "visible" : "hidden"}
           exit="hidden"
           variants={revealVariants}
           transition={{ duration: 0.75, ease: "easeInOut" }}
-          className={`backdrop-blur-md p-4 sm:p-6 md:p-8 rounded-2xl sm:rounded-3xl border shadow-2xl relative overflow-hidden group transition-all ${isDarkMode ? 'duration-[300ms] bg-gradient-to-br from-slate-900 to-slate-950 border-blue-950' : 'duration-[2000ms] bg-gradient-to-br from-white via-slate-50 to-sky-100 border-slate-200'}`}
+          className={`scroll-mt-28 backdrop-blur-md p-4 sm:p-6 md:p-8 rounded-2xl sm:rounded-3xl border shadow-2xl relative overflow-hidden group transition-all ${isDarkMode ? 'duration-[300ms] bg-gradient-to-br from-slate-900 to-slate-950 border-blue-950' : 'duration-[2000ms] bg-gradient-to-br from-white via-slate-50 to-sky-100 border-slate-200'}`}
         >
           <div className={`absolute top-0 left-0 w-full h-1 group-hover:scale-x-110 transition-transform duration-1000 origin-left ${isDarkMode ? 'bg-gradient-to-r from-cyan-600 to-blue-500' : 'bg-gradient-to-r from-blue-400 to-blue-600'}`}></div>
           <h3 className={`text-xl sm:text-2xl font-bold mb-4 sm:mb-6 transition-colors ${isDarkMode ? 'duration-[300ms] text-cyan-400' : 'duration-[2000ms] text-blue-600'}`}>01. Projects & Experience</h3>
@@ -256,12 +312,14 @@ export default function Home() {
         </motion.section>
 
         <motion.section
+          id="visuals"
           ref={galleryRef}
           initial="hidden"
           animate={galleryInView ? "visible" : "hidden"}
           exit="hidden"
           variants={revealVariants}
           transition={{ duration: 0.75, ease: "easeInOut" }}
+          className="scroll-mt-28"
         >
           <h3 className={`text-xl sm:text-2xl font-bold mb-4 sm:mb-6 transition-colors ${isDarkMode ? 'duration-[300ms] text-cyan-400' : 'duration-[2000ms] text-blue-600'}`}>02. Visual matrix</h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -293,13 +351,14 @@ export default function Home() {
         </motion.section>
 
         <motion.section
+          id="achievements"
           ref={achievementsRef}
           initial="hidden"
           animate={achievementsInView ? "visible" : "hidden"}
           exit="hidden"
           variants={revealVariants}
           transition={{ duration: 0.75, ease: "easeInOut" }}
-          className="mb-20"
+          className="scroll-mt-28 mb-20"
         >
           <h3 className={`text-xl sm:text-2xl font-bold mb-4 sm:mb-6 transition-colors ${isDarkMode ? 'duration-[300ms] text-cyan-400' : 'duration-[2000ms] text-blue-600'}`}>03. Achievements</h3>
           <div className="grid gap-6 sm:gap-8 lg:grid-cols-[1.4fr_0.9fr]">
