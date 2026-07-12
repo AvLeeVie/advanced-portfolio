@@ -34,10 +34,10 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col overflow-x-hidden">
-        <div className="fixed top-4 right-4 z-50 sm:top-6 sm:right-6">
+        <div className="fixed top-0 right-0 z-50 p-3 sm:p-4 md:p-5">
           <ThemeSwitch />
         </div>
-        {children}
+        <div className="w-full">{children}</div>
       </body>
     </html>
   );
