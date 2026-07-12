@@ -33,8 +33,8 @@ export default function RootLayout({
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">
-        <div className="fixed top-6 right-6 z-50">
+      <body className="min-h-full flex flex-col overflow-x-hidden">
+        <div className="fixed top-4 right-4 z-50 sm:top-6 sm:right-6">
           <ThemeSwitch />
         </div>
         {children}

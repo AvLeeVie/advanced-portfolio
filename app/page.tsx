@@ -84,7 +84,7 @@ export default function Home() {
   };
 
   return (
-    <div className={`relative min-h-screen font-sans overflow-hidden transition-colors ${isDarkMode ? 'duration-[300ms]' : 'duration-[2000ms]'} ${isDarkMode ? 'text-slate-100' : 'text-slate-900'}`}>
+    <div className={`relative min-h-screen font-sans overflow-x-hidden transition-colors ${isDarkMode ? 'duration-[300ms]' : 'duration-[2000ms]'} ${isDarkMode ? 'text-slate-100' : 'text-slate-900'}`}>
       <Head>
         <title>Dustin Lee A. Oliganga | Tech Portfolio</title>
         <style>{`
@@ -155,7 +155,7 @@ export default function Home() {
         </div>
       )}
 
-      <main className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 py-8 md:py-16 flex flex-col gap-14 md:gap-24">
+      <main className="relative z-10 max-w-7xl mx-auto px-3 sm:px-6 py-6 sm:py-8 md:py-16 flex flex-col gap-8 sm:gap-14 md:gap-24 pt-14 sm:pt-10">
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.45 }}>
           <motion.section
             ref={heroRef}
@@ -164,11 +164,11 @@ export default function Home() {
             exit="hidden"
             variants={revealVariants}
             transition={{ duration: 0.75, ease: "easeInOut" }}
-            className="flex flex-col lg:flex-row items-center justify-between gap-6 lg:gap-10 min-h-[60vh] mt-10"
+            className="flex flex-col lg:flex-row items-center justify-between gap-5 sm:gap-6 lg:gap-10 min-h-auto sm:min-h-[60vh] mt-4 sm:mt-10"
           >
-            <div className="flex-1 lg:max-w-[34%] self-center text-center lg:text-right space-y-6 lg:flex lg:flex-col lg:justify-center lg:-mt-16">
-            <h2 className={`text-3xl font-black transition-colors ${isDarkMode ? 'duration-[300ms] text-white' : 'duration-[2000ms] text-slate-800'}`}>The Engineer</h2>
-            <p className={`font-sans text-base transition-colors border-r-0 sm:border-r-4 pr-0 sm:pr-4 ${isDarkMode ? 'duration-[300ms] text-cyan-400 sm:border-cyan-500' : 'duration-[2000ms] text-slate-800 sm:border-blue-500'}`}>
+            <div className="w-full flex-1 lg:max-w-[34%] self-center text-center lg:text-right space-y-3 sm:space-y-6 lg:flex lg:flex-col lg:justify-center lg:-mt-16">
+            <h2 className={`text-2xl sm:text-3xl font-black transition-colors ${isDarkMode ? 'duration-[300ms] text-white' : 'duration-[2000ms] text-slate-800'}`}>The Engineer</h2>
+            <p className={`font-sans text-sm sm:text-base leading-7 transition-colors border-r-0 sm:border-r-4 pr-0 sm:pr-4 ${isDarkMode ? 'duration-[300ms] text-cyan-400 sm:border-cyan-500' : 'duration-[2000ms] text-slate-800 sm:border-blue-500'}`}>
               BS Computer Science
               <br/>Godot 4 Developer
               <br/>Interactive Media Specialist
@@ -182,18 +182,18 @@ export default function Home() {
             <div className="relative overflow-visible">
               <div className={`absolute -inset-3 sm:-inset-4 rounded-full border-2 border-dashed animate-[spin_10s_linear_infinite] transition-colors ${isDarkMode ? 'duration-[300ms] border-cyan-500/50' : 'duration-[2000ms] border-blue-400'}`}></div>
               <div className={`absolute -inset-6 sm:-inset-8 rounded-full border-2 border-dotted animate-[spin_15s_linear_infinite_reverse] opacity-50 transition-colors ${isDarkMode ? 'duration-[300ms] border-sky-400/50' : 'duration-[2000ms] border-blue-300'}`}></div>
-              <div className={`relative w-44 h-44 sm:w-56 sm:h-56 md:w-72 md:h-72 rounded-full overflow-hidden border-4 z-10 flex items-center justify-center transition-all ${isDarkMode ? 'duration-[300ms] border-cyan-600 shadow-[0_0_60px_rgba(14,165,233,0.5)] bg-slate-900' : 'duration-[2000ms] border-blue-600 shadow-[0_0_40px_rgba(59,130,246,0.6)] bg-slate-100'}`}>
+              <div className={`relative w-40 h-40 sm:w-56 sm:h-56 md:w-72 md:h-72 rounded-full overflow-hidden border-4 z-10 flex items-center justify-center transition-all ${isDarkMode ? 'duration-[300ms] border-cyan-600 shadow-[0_0_60px_rgba(14,165,233,0.5)] bg-slate-900' : 'duration-[2000ms] border-blue-600 shadow-[0_0_40px_rgba(59,130,246,0.6)] bg-slate-100'}`}>
                 <Image src="/dustin-profile.jpg" alt="Dustin Lee A. Oliganga" width={300} height={300} className="w-full h-full object-cover"/>
               </div>
             </div>
-            <div className="text-center">
-              <p className="hero-name text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 via-sky-500 to-blue-500">Dustin Lee A. Oliganga</p>
+            <div className="text-center px-2">
+              <p className="hero-name text-xl sm:text-2xl md:text-4xl lg:text-5xl font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 via-sky-500 to-blue-500 break-words">Dustin Lee A. Oliganga</p>
             </div>
           </div>
 
-          <div className="flex-1 lg:max-w-[34%] self-center text-center lg:text-left space-y-6 lg:flex lg:flex-col lg:justify-center lg:-mt-16">
-            <h2 className={`text-3xl font-black tracking-tighter transition-colors ${isDarkMode ? 'duration-[300ms] text-white' : 'duration-[2000ms] text-slate-800'}`}>The Leader</h2>
-            <p className={`font-sans text-base transition-colors border-l-0 sm:border-l-4 pl-0 sm:pl-4 ${isDarkMode ? 'duration-[300ms] text-cyan-400 sm:border-cyan-500' : 'duration-[2000ms] text-slate-800 sm:border-blue-500'}`}>
+          <div className="w-full flex-1 lg:max-w-[34%] self-center text-center lg:text-left space-y-3 sm:space-y-6 lg:flex lg:flex-col lg:justify-center lg:-mt-16">
+            <h2 className={`text-2xl sm:text-3xl font-black tracking-tighter transition-colors ${isDarkMode ? 'duration-[300ms] text-white' : 'duration-[2000ms] text-slate-800'}`}>The Leader</h2>
+            <p className={`font-sans text-sm sm:text-base leading-7 transition-colors border-l-0 sm:border-l-4 pl-0 sm:pl-4 ${isDarkMode ? 'duration-[300ms] text-cyan-400 sm:border-cyan-500' : 'duration-[2000ms] text-slate-800 sm:border-blue-500'}`}>
               Former CSS Mayor
               <br/>Former CITE Congressman
               <br/>Former Student Adviser CSS
@@ -212,12 +212,12 @@ export default function Home() {
           exit="hidden"
           variants={revealVariants}
           transition={{ duration: 0.75, ease: "easeInOut" }}
-          className={`backdrop-blur-md p-6 sm:p-8 rounded-3xl border shadow-2xl relative overflow-hidden group transition-all ${isDarkMode ? 'duration-[300ms] bg-gradient-to-br from-slate-900 to-slate-950 border-blue-950' : 'duration-[2000ms] bg-gradient-to-br from-white via-slate-50 to-sky-100 border-slate-200'}`}
+          className={`backdrop-blur-md p-4 sm:p-6 md:p-8 rounded-2xl sm:rounded-3xl border shadow-2xl relative overflow-hidden group transition-all ${isDarkMode ? 'duration-[300ms] bg-gradient-to-br from-slate-900 to-slate-950 border-blue-950' : 'duration-[2000ms] bg-gradient-to-br from-white via-slate-50 to-sky-100 border-slate-200'}`}
         >
           <div className={`absolute top-0 left-0 w-full h-1 group-hover:scale-x-110 transition-transform duration-1000 origin-left ${isDarkMode ? 'bg-gradient-to-r from-cyan-600 to-blue-500' : 'bg-gradient-to-r from-blue-400 to-blue-600'}`}></div>
-          <h3 className={`text-2xl font-bold mb-6 transition-colors ${isDarkMode ? 'duration-[300ms] text-cyan-400' : 'duration-[2000ms] text-blue-600'}`}>01. Projects & Experience</h3>
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <article className={`theme-box border p-6 rounded-3xl transition-all duration-[2000ms] ${isDarkMode ? 'bg-slate-800/60 border-blue-900/40' : 'bg-white border-slate-300 shadow-[0_20px_50px_-30px_rgba(14,165,233,0.45)]'}`}>
+          <h3 className={`text-xl sm:text-2xl font-bold mb-4 sm:mb-6 transition-colors ${isDarkMode ? 'duration-[300ms] text-cyan-400' : 'duration-[2000ms] text-blue-600'}`}>01. Projects & Experience</h3>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
+            <article className={`theme-box border p-4 sm:p-6 rounded-2xl sm:rounded-3xl transition-all duration-[2000ms] ${isDarkMode ? 'bg-slate-800/60 border-blue-900/40' : 'bg-white border-slate-300 shadow-[0_20px_50px_-30px_rgba(14,165,233,0.45)]'}`}>
               <div className="flex items-center justify-between gap-3 mb-4">
                 <div>
                   <h4 className={`text-xl font-bold transition-colors ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>S.P.A.R.K. Learning Application</h4>
@@ -229,7 +229,7 @@ export default function Home() {
               </p>
             </article>
 
-            <article className={`theme-box border p-6 rounded-3xl transition-all duration-[2000ms] ${isDarkMode ? 'bg-slate-800/60 border-blue-900/40' : 'bg-white border-slate-300 shadow-[0_20px_50px_-30px_rgba(14,165,233,0.45)]'}`}>
+            <article className={`theme-box border p-4 sm:p-6 rounded-2xl sm:rounded-3xl transition-all duration-[2000ms] ${isDarkMode ? 'bg-slate-800/60 border-blue-900/40' : 'bg-white border-slate-300 shadow-[0_20px_50px_-30px_rgba(14,165,233,0.45)]'}`}>
               <div className="flex items-center justify-between gap-3 mb-4">
                 <div>
                   <h4 className={`text-xl font-bold transition-colors ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>Slimy Adventure</h4>
@@ -241,7 +241,7 @@ export default function Home() {
               </p>
             </article>
 
-            <article className={`theme-box border p-6 rounded-3xl transition-all duration-[2000ms] ${isDarkMode ? 'bg-slate-800/60 border-blue-900/40' : 'bg-white border-slate-300 shadow-[0_20px_50px_-30px_rgba(14,165,233,0.45)]'}`}>
+            <article className={`theme-box border p-4 sm:p-6 rounded-2xl sm:rounded-3xl transition-all duration-[2000ms] ${isDarkMode ? 'bg-slate-800/60 border-blue-900/40' : 'bg-white border-slate-300 shadow-[0_20px_50px_-30px_rgba(14,165,233,0.45)]'}`}>
               <div className="flex items-center justify-between gap-3 mb-4">
                 <div>
                   <h4 className={`text-xl font-bold transition-colors ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>Corruption Tactics</h4>
@@ -263,9 +263,9 @@ export default function Home() {
           variants={revealVariants}
           transition={{ duration: 0.75, ease: "easeInOut" }}
         >
-          <h3 className={`text-2xl font-bold mb-6 transition-colors ${isDarkMode ? 'duration-[300ms] text-cyan-400' : 'duration-[2000ms] text-blue-600'}`}>02. Visual matrix</h3>
+          <h3 className={`text-xl sm:text-2xl font-bold mb-4 sm:mb-6 transition-colors ${isDarkMode ? 'duration-[300ms] text-cyan-400' : 'duration-[2000ms] text-blue-600'}`}>02. Visual matrix</h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
-            <article className={`theme-box col-span-2 row-span-2 rounded-2xl border-2 border-dashed p-6 transition-colors ${isDarkMode ? 'duration-[300ms] bg-[#080f26]/40 border-blue-900/50 text-blue-700' : 'duration-[2000ms] bg-white border-slate-200 text-slate-800 shadow-sm'}`}>
+            <article className={`theme-box sm:col-span-2 sm:row-span-2 rounded-2xl border-2 border-dashed p-4 sm:p-6 transition-colors ${isDarkMode ? 'duration-[300ms] bg-[#080f26]/40 border-blue-900/50 text-blue-700' : 'duration-[2000ms] bg-white border-slate-200 text-slate-800 shadow-sm'}`}>
               <h4 className="text-xl font-semibold mb-3">Systems & UI concepts</h4>
               <p className={`text-sm leading-6 ${isDarkMode ? 'text-slate-300' : 'text-slate-900'}`}>
                 Design explorations for polished overlays, HUD layouts, and readable visual systems that support gameplay clarity.
@@ -301,10 +301,10 @@ export default function Home() {
           transition={{ duration: 0.75, ease: "easeInOut" }}
           className="mb-20"
         >
-          <h3 className={`text-2xl font-bold mb-6 transition-colors ${isDarkMode ? 'duration-[300ms] text-cyan-400' : 'duration-[2000ms] text-blue-600'}`}>03. Achievements</h3>
-          <div className="grid gap-8 lg:grid-cols-[1.4fr_0.9fr]">
+          <h3 className={`text-xl sm:text-2xl font-bold mb-4 sm:mb-6 transition-colors ${isDarkMode ? 'duration-[300ms] text-cyan-400' : 'duration-[2000ms] text-blue-600'}`}>03. Achievements</h3>
+          <div className="grid gap-6 sm:gap-8 lg:grid-cols-[1.4fr_0.9fr]">
             <div className="grid gap-6">
-              <section className={`theme-box p-6 md:p-8 rounded-3xl border transition-all duration-[2000ms] ${isDarkMode ? 'bg-gradient-to-br from-slate-900 to-slate-950 border-blue-950' : 'bg-gradient-to-br from-white to-blue-50 border-slate-200'}`}>
+              <section className={`theme-box p-4 sm:p-6 md:p-8 rounded-2xl sm:rounded-3xl border transition-all duration-[2000ms] ${isDarkMode ? 'bg-gradient-to-br from-slate-900 to-slate-950 border-blue-950' : 'bg-gradient-to-br from-white to-blue-50 border-slate-200'}`}>
                 <h4 className={`text-lg font-bold mb-4 transition-colors ${isDarkMode ? 'duration-[300ms] text-cyan-400' : 'duration-[2000ms] text-blue-600'}`}>Education</h4>
                 <div className={`space-y-3 font-sans text-sm leading-6 ${isDarkMode ? 'text-slate-300' : 'text-slate-900'}`}>
                   <p><span className="font-semibold">BS Computer Science</span> — Nueva Vizcaya State University (NVSU), Bayombong, Nueva Vizcaya | 2023 – Present</p>
@@ -314,14 +314,14 @@ export default function Home() {
                 </div>
               </section>
 
-              <section className={`theme-box p-6 md:p-8 rounded-3xl border transition-all duration-[2000ms] ${isDarkMode ? 'bg-gradient-to-br from-slate-900 to-slate-950 border-blue-950' : 'bg-gradient-to-br from-white to-blue-50 border-slate-200'}`}>
+              <section className={`theme-box p-4 sm:p-6 md:p-8 rounded-2xl sm:rounded-3xl border transition-all duration-[2000ms] ${isDarkMode ? 'bg-gradient-to-br from-slate-900 to-slate-950 border-blue-950' : 'bg-gradient-to-br from-white to-blue-50 border-slate-200'}`}>
                 <h4 className={`text-lg font-bold mb-4 transition-colors ${isDarkMode ? 'duration-[300ms] text-cyan-400' : 'duration-[2000ms] text-blue-600'}`}>Qualifications</h4>
                 <p className={`font-sans text-sm leading-7 ${isDarkMode ? 'text-slate-300' : 'text-slate-900'}`}>
                   A dynamic, visionary, and results-driven student leader with a deep-rooted commitment to service and excellence. Grounded in an empathetic leadership style, I bridge technical innovation and social responsibility while managing high-level governance roles and international technical engagements.
                 </p>
               </section>
 
-              <section className={`theme-box p-6 md:p-8 rounded-3xl border transition-all duration-[2000ms] ${isDarkMode ? 'bg-gradient-to-br from-slate-900 to-slate-950 border-blue-950' : 'bg-gradient-to-br from-white to-blue-50 border-slate-200'}`}>
+              <section className={`theme-box p-4 sm:p-6 md:p-8 rounded-2xl sm:rounded-3xl border transition-all duration-[2000ms] ${isDarkMode ? 'bg-gradient-to-br from-slate-900 to-slate-950 border-blue-950' : 'bg-gradient-to-br from-white to-blue-50 border-slate-200'}`}>
                 <div className="grid gap-6 md:grid-cols-2">
                   <div>
                     <h4 className={`text-lg font-bold mb-4 transition-colors ${isDarkMode ? 'duration-[300ms] text-cyan-400' : 'duration-[2000ms] text-blue-600'}`}>Leadership & Experience</h4>
@@ -345,7 +345,7 @@ export default function Home() {
                 </div>
               </section>
 
-              <section className={`theme-box p-6 md:p-8 rounded-3xl border transition-all duration-[2000ms] ${isDarkMode ? 'bg-gradient-to-br from-slate-900 to-slate-950 border-blue-950' : 'bg-gradient-to-br from-white to-blue-50 border-slate-200'}`}>
+              <section className={`theme-box p-4 sm:p-6 md:p-8 rounded-2xl sm:rounded-3xl border transition-all duration-[2000ms] ${isDarkMode ? 'bg-gradient-to-br from-slate-900 to-slate-950 border-blue-950' : 'bg-gradient-to-br from-white to-blue-50 border-slate-200'}`}>
                 <h4 className={`text-lg font-bold mb-4 transition-colors ${isDarkMode ? 'duration-[300ms] text-cyan-400' : 'duration-[2000ms] text-blue-600'}`}>Conferences & Seminars</h4>
                 <div className={`grid gap-6 sm:grid-cols-2 font-sans text-sm leading-6 ${isDarkMode ? 'text-slate-300' : 'text-slate-900'}`}>
                   <div>
@@ -370,7 +370,7 @@ export default function Home() {
             </div>
 
             <aside className="space-y-6">
-              <div className={`theme-box p-6 md:p-8 rounded-3xl border transition-all duration-[2000ms] ${isDarkMode ? 'bg-gradient-to-br from-slate-900 to-slate-950 border-blue-950' : 'bg-gradient-to-br from-white to-blue-50 border-slate-200'}`}>
+              <div className={`theme-box p-4 sm:p-6 md:p-8 rounded-2xl sm:rounded-3xl border transition-all duration-[2000ms] ${isDarkMode ? 'bg-gradient-to-br from-slate-900 to-slate-950 border-blue-950' : 'bg-gradient-to-br from-white to-blue-50 border-slate-200'}`}>
                 <h4 className={`text-lg font-bold mb-4 transition-colors ${isDarkMode ? 'duration-[300ms] text-cyan-400' : 'duration-[2000ms] text-blue-600'}`}>Volunteerism & Activities</h4>
                 <ul className={`space-y-3 font-sans text-sm leading-6 ${isDarkMode ? 'text-slate-300' : 'text-slate-900'}`}>
                   <li>Participant / Volunteer DAR Pelikularyo | 2025 – 2026</li>
