@@ -123,6 +123,18 @@ export default function Home() {
         ></div>
       )}
 
+      <header className="sticky top-0 z-40 w-full border-b border-slate-200/70 bg-white/80 backdrop-blur-md transition-colors duration-300 dark:border-slate-700/70 dark:bg-slate-950/80">
+        <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6">
+          <span className="text-sm font-semibold uppercase tracking-[0.25em] text-slate-900 dark:text-slate-100">Dustin Oliganga</span>
+          <nav className="flex flex-wrap items-center gap-3 text-sm">
+            <a href="#frontpage" className="rounded-full px-3 py-1 transition-colors hover:bg-slate-200/80 dark:hover:bg-slate-800/80 text-slate-700 dark:text-slate-200">Front page</a>
+            <a href="#about" className="rounded-full px-3 py-1 transition-colors hover:bg-slate-200/80 dark:hover:bg-slate-800/80 text-slate-700 dark:text-slate-200">About</a>
+            <a href="#projects" className="rounded-full px-3 py-1 transition-colors hover:bg-slate-200/80 dark:hover:bg-slate-800/80 text-slate-700 dark:text-slate-200">Projects</a>
+            <a href="#achievements" className="rounded-full px-3 py-1 transition-colors hover:bg-slate-200/80 dark:hover:bg-slate-800/80 text-slate-700 dark:text-slate-200">Achievements</a>
+          </nav>
+        </div>
+      </header>
+
       {/* Theme switch moved to global layout */}
 
       <Particles
@@ -157,14 +169,16 @@ export default function Home() {
 
       <main className="relative z-10 max-w-7xl mx-auto px-3 sm:px-6 py-6 sm:py-8 md:py-16 flex flex-col gap-8 sm:gap-14 md:gap-24 pt-14 sm:pt-10">
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.45 }}>
+          <div id="about" className="absolute -top-28" aria-hidden="true"></div>
           <motion.section
+            id="frontpage"
             ref={heroRef}
             initial="hidden"
             animate={heroInView ? "visible" : "hidden"}
             exit="hidden"
             variants={revealVariants}
             transition={{ duration: 0.75, ease: "easeInOut" }}
-            className="flex flex-col lg:flex-row items-center justify-between gap-5 sm:gap-6 lg:gap-10 min-h-auto sm:min-h-[60vh] mt-4 sm:mt-10"
+            className="scroll-mt-28 flex flex-col lg:flex-row items-center justify-between gap-5 sm:gap-6 lg:gap-10 min-h-auto sm:min-h-[60vh] mt-4 sm:mt-10"
           >
             <div className="w-full flex-1 lg:max-w-[34%] self-center text-center lg:text-right space-y-3 sm:space-y-6 lg:flex lg:flex-col lg:justify-center lg:-mt-16">
             <h2 className={`text-2xl sm:text-3xl font-black transition-colors ${isDarkMode ? 'duration-[300ms] text-white' : 'duration-[2000ms] text-slate-800'}`}>The Engineer</h2>
@@ -206,13 +220,14 @@ export default function Home() {
         </motion.div>
 
         <motion.section
+          id="projects"
           ref={projectsRef}
           initial="hidden"
           animate={projectsInView ? "visible" : "hidden"}
           exit="hidden"
           variants={revealVariants}
           transition={{ duration: 0.75, ease: "easeInOut" }}
-          className={`backdrop-blur-md p-4 sm:p-6 md:p-8 rounded-2xl sm:rounded-3xl border shadow-2xl relative overflow-hidden group transition-all ${isDarkMode ? 'duration-[300ms] bg-gradient-to-br from-slate-900 to-slate-950 border-blue-950' : 'duration-[2000ms] bg-gradient-to-br from-white via-slate-50 to-sky-100 border-slate-200'}`}
+          className={`scroll-mt-28 backdrop-blur-md p-4 sm:p-6 md:p-8 rounded-2xl sm:rounded-3xl border shadow-2xl relative overflow-hidden group transition-all ${isDarkMode ? 'duration-[300ms] bg-gradient-to-br from-slate-900 to-slate-950 border-blue-950' : 'duration-[2000ms] bg-gradient-to-br from-white via-slate-50 to-sky-100 border-slate-200'}`}
         >
           <div className={`absolute top-0 left-0 w-full h-1 group-hover:scale-x-110 transition-transform duration-1000 origin-left ${isDarkMode ? 'bg-gradient-to-r from-cyan-600 to-blue-500' : 'bg-gradient-to-r from-blue-400 to-blue-600'}`}></div>
           <h3 className={`text-xl sm:text-2xl font-bold mb-4 sm:mb-6 transition-colors ${isDarkMode ? 'duration-[300ms] text-cyan-400' : 'duration-[2000ms] text-blue-600'}`}>01. Projects & Experience</h3>
@@ -256,12 +271,14 @@ export default function Home() {
         </motion.section>
 
         <motion.section
+          id="visuals"
           ref={galleryRef}
           initial="hidden"
           animate={galleryInView ? "visible" : "hidden"}
           exit="hidden"
           variants={revealVariants}
           transition={{ duration: 0.75, ease: "easeInOut" }}
+          className="scroll-mt-28"
         >
           <h3 className={`text-xl sm:text-2xl font-bold mb-4 sm:mb-6 transition-colors ${isDarkMode ? 'duration-[300ms] text-cyan-400' : 'duration-[2000ms] text-blue-600'}`}>02. Visual matrix</h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -293,13 +310,14 @@ export default function Home() {
         </motion.section>
 
         <motion.section
+          id="achievements"
           ref={achievementsRef}
           initial="hidden"
           animate={achievementsInView ? "visible" : "hidden"}
           exit="hidden"
           variants={revealVariants}
           transition={{ duration: 0.75, ease: "easeInOut" }}
-          className="mb-20"
+          className="scroll-mt-28 mb-20"
         >
           <h3 className={`text-xl sm:text-2xl font-bold mb-4 sm:mb-6 transition-colors ${isDarkMode ? 'duration-[300ms] text-cyan-400' : 'duration-[2000ms] text-blue-600'}`}>03. Achievements</h3>
           <div className="grid gap-6 sm:gap-8 lg:grid-cols-[1.4fr_0.9fr]">
