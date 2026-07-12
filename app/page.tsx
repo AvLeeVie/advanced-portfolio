@@ -123,14 +123,14 @@ export default function Home() {
         ></div>
       )}
 
-      <header className="sticky top-0 z-40 w-full border-b border-slate-200/70 bg-white/80 backdrop-blur-md transition-colors duration-300 dark:border-slate-700/70 dark:bg-slate-950/80">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6">
-          <span className="text-sm font-semibold uppercase tracking-[0.25em] text-slate-900 dark:text-slate-100">Dustin Oliganga</span>
-          <nav className="flex flex-wrap items-center gap-3 text-sm">
-            <a href="#frontpage" className="rounded-full px-3 py-1 transition-colors hover:bg-slate-200/80 dark:hover:bg-slate-800/80 text-slate-700 dark:text-slate-200">Front page</a>
-            <a href="#about" className="rounded-full px-3 py-1 transition-colors hover:bg-slate-200/80 dark:hover:bg-slate-800/80 text-slate-700 dark:text-slate-200">About</a>
-            <a href="#projects" className="rounded-full px-3 py-1 transition-colors hover:bg-slate-200/80 dark:hover:bg-slate-800/80 text-slate-700 dark:text-slate-200">Projects</a>
-            <a href="#achievements" className="rounded-full px-3 py-1 transition-colors hover:bg-slate-200/80 dark:hover:bg-slate-800/80 text-slate-700 dark:text-slate-200">Achievements</a>
+      <header className="sticky top-0 z-40 w-full px-3 pt-3 sm:px-4 sm:pt-4">
+        <div className="mx-auto flex max-w-7xl items-center justify-between rounded-full border border-white/50 bg-white/60 px-3 py-2 shadow-[0_8px_30px_rgba(15,23,42,0.08)] backdrop-blur-xl transition-all duration-300 dark:border-slate-700/60 dark:bg-slate-950/60 dark:shadow-[0_8px_30px_rgba(2,6,23,0.35)]">
+          <span className="text-xs font-semibold uppercase tracking-[0.3em] text-slate-900 dark:text-slate-100 sm:text-sm">Dustin Oliganga</span>
+          <nav className="flex flex-wrap items-center justify-end gap-1.5 text-xs sm:gap-2 sm:text-sm">
+            <a href="#frontpage" className="rounded-full px-2.5 py-1 text-slate-700 transition-all duration-300 hover:bg-cyan-500/10 hover:text-cyan-700 dark:text-slate-200 dark:hover:bg-cyan-400/10 dark:hover:text-cyan-300 sm:px-3">Front page</a>
+            <a href="#about" className="rounded-full px-2.5 py-1 text-slate-700 transition-all duration-300 hover:bg-cyan-500/10 hover:text-cyan-700 dark:text-slate-200 dark:hover:bg-cyan-400/10 dark:hover:text-cyan-300 sm:px-3">About</a>
+            <a href="#projects" className="rounded-full px-2.5 py-1 text-slate-700 transition-all duration-300 hover:bg-cyan-500/10 hover:text-cyan-700 dark:text-slate-200 dark:hover:bg-cyan-400/10 dark:hover:text-cyan-300 sm:px-3">Projects</a>
+            <a href="#achievements" className="rounded-full px-2.5 py-1 text-slate-700 transition-all duration-300 hover:bg-cyan-500/10 hover:text-cyan-700 dark:text-slate-200 dark:hover:bg-cyan-400/10 dark:hover:text-cyan-300 sm:px-3">Achievements</a>
           </nav>
         </div>
       </header>
