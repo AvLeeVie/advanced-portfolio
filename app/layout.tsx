@@ -34,7 +34,7 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col overflow-x-hidden">
-        <div className="fixed top-3 right-3 z-50 sm:top-4 sm:right-4 md:top-6 md:right-6">
+        <div className="fixed top-16 right-3 z-50 sm:top-20 sm:right-4 md:top-24 md:right-6">
           <ThemeSwitch />
         </div>
         {children}

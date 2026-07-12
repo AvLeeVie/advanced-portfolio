@@ -177,9 +177,9 @@ export default function Home() {
       )}
 
       <header className="sticky top-0 z-40 w-full px-3 pt-3 sm:px-4 sm:pt-4">
-        <div className={`mx-auto flex max-w-7xl items-center justify-between rounded-full border px-3 py-2 pr-16 shadow-[0_8px_30px_rgba(15,23,42,0.08)] backdrop-blur-xl transition-all duration-300 sm:pr-20 ${isDarkMode ? 'border-slate-700/60 bg-slate-950/70 text-slate-100 shadow-[0_8px_30px_rgba(2,6,23,0.35)]' : 'border-white/50 bg-white/75 text-slate-900'}`}>
+        <div className={`mx-auto flex max-w-7xl items-center justify-between rounded-full border px-3 py-2 pr-16 shadow-[0_8px_30px_rgba(15,23,42,0.08)] backdrop-blur-xl transition-all duration-300 sm:pr-20 ${isDarkMode ? 'border-slate-700/40 bg-slate-950/20 text-slate-100' : 'border-white/40 bg-white/20 text-slate-900'}`}>
           <span className={`text-xs font-semibold uppercase tracking-[0.3em] sm:text-sm ${isDarkMode ? 'text-slate-100' : 'text-slate-900'}`}>Dustin Oliganga</span>
-          <nav className="flex flex-wrap items-center justify-end gap-1.5 text-xs sm:gap-2 sm:text-sm">
+          <nav className="hidden sm:flex flex-wrap items-center justify-end gap-1.5 text-xs sm:gap-2 sm:text-sm">
             <a href="#frontpage" className={`rounded-full px-2.5 py-1 transition-all duration-300 sm:px-3 ${isDarkMode ? 'text-slate-200 hover:bg-cyan-400/10 hover:text-cyan-300' : 'text-slate-700 hover:bg-cyan-500/10 hover:text-cyan-700'}`}>Front page</a>
             <a href="#about" className={`rounded-full px-2.5 py-1 transition-all duration-300 sm:px-3 ${isDarkMode ? 'text-slate-200 hover:bg-cyan-400/10 hover:text-cyan-300' : 'text-slate-700 hover:bg-cyan-500/10 hover:text-cyan-700'}`}>About</a>
             <a href="#projects" className={`rounded-full px-2.5 py-1 transition-all duration-300 sm:px-3 ${isDarkMode ? 'text-slate-200 hover:bg-cyan-400/10 hover:text-cyan-300' : 'text-slate-700 hover:bg-cyan-500/10 hover:text-cyan-700'}`}>Projects</a>
@@ -200,12 +200,12 @@ export default function Home() {
 
       <div
         aria-hidden="true"
-        className={`pointer-events-none fixed z-30 h-11 w-11 rounded-[45%] border border-cyan-300/70 bg-cyan-400/20 shadow-[0_0_40px_rgba(34,211,238,0.35)] backdrop-blur-md transition-all duration-200 sm:h-12 sm:w-12 ${isCursorActive ? 'scale-100' : 'scale-90 opacity-90'}`}
-        style={{ left: cursorPosition.x, top: cursorPosition.y, transform: 'translate(-50%, -50%)' }}
+        className={`pointer-events-none fixed z-30 h-12 w-12 rounded-[50%] border-2 border-cyan-300 bg-cyan-500/40 shadow-[0_0_60px_rgba(34,211,238,0.6)] backdrop-blur-md transition-all duration-200 sm:h-14 sm:w-14 ${isCursorActive ? 'scale-100' : 'scale-110 opacity-100'}`}
+        style={{ left: cursorPosition.x, top: cursorPosition.y, transform: `translate(-50%, -50%) ${!isCursorActive ? 'scale(1.1)' : 'scale(1)'}` }}
       >
-        <div className="absolute inset-0 rounded-[45%] border border-white/40" />
-        <div className="absolute left-1/2 top-1/2 h-2.5 w-2.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-cyan-200/90" />
-        <div className={`absolute left-1/2 top-[105%] h-5 w-1 -translate-x-1/2 rounded-full bg-cyan-300/70 blur-[2px] ${isCursorActive ? 'opacity-0' : 'opacity-100'}`} />
+        <div className="absolute inset-1 rounded-[50%] border border-cyan-200/60" />
+        <div className="absolute left-1/2 top-1/2 h-3 w-3 -translate-x-1/2 -translate-y-1/2 rounded-full bg-cyan-300/95" />
+        <div className={`absolute left-1/2 top-full mt-1 h-6 w-1.5 -translate-x-1/2 rounded-full bg-gradient-to-b from-cyan-400 to-cyan-300/40 blur-[1px] ${isCursorActive ? 'opacity-0' : 'opacity-100'}`} />
       </div>
 
       {isDarkMode && (
