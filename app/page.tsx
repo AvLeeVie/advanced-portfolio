@@ -176,10 +176,30 @@ export default function Home() {
         ></div>
       )}
 
-      <header className="sticky top-0 z-40 w-full px-3 pt-3 sm:px-4 sm:pt-4">
+      <header className="hidden sm:block sticky top-0 z-40 w-full px-3 pt-3 sm:px-4 sm:pt-4">
         <div className={`mx-auto flex max-w-7xl items-center justify-between rounded-full border px-3 py-2 pr-16 shadow-[0_8px_30px_rgba(15,23,42,0.08)] backdrop-blur-xl transition-all duration-300 sm:pr-20 ${isDarkMode ? 'border-slate-700/40 bg-slate-950/20 text-slate-100' : 'border-white/40 bg-white/20 text-slate-900'}`}>
           <span className={`text-xs font-semibold uppercase tracking-[0.3em] sm:text-sm ${isDarkMode ? 'text-slate-100' : 'text-slate-900'}`}>Dustin Oliganga</span>
-          <nav className="hidden sm:flex flex-wrap items-center justify-end gap-1.5 text-xs sm:gap-2 sm:text-sm">
+          <div className="flex-1 flex items-center justify-center">
+            <div className="btn-container">
+              <div style={{['--a' as any]: 0}} className="btn-sensor sensor-n"></div>
+              <div style={{['--a' as any]: 45}} className="btn-sensor sensor-ne"></div>
+              <div style={{['--a' as any]: 90}} className="btn-sensor sensor-e"></div>
+              <div style={{['--a' as any]: 135}} className="btn-sensor sensor-se"></div>
+              <div style={{['--a' as any]: 180}} className="btn-sensor sensor-s"></div>
+              <div style={{['--a' as any]: 225}} className="btn-sensor sensor-sw"></div>
+              <div style={{['--a' as any]: 270}} className="btn-sensor sensor-w"></div>
+              <div style={{['--a' as any]: 315}} className="btn-sensor sensor-nw"></div>
+              <button className="btn-button">
+                <div className="btn-lid"></div>
+                <div className="btn-pupil"></div>
+              </button>
+              <button className="btn-button">
+                <div className="btn-lid"></div>
+                <div className="btn-pupil"></div>
+              </button>
+            </div>
+          </div>
+          <nav className="flex flex-wrap items-center justify-end gap-1.5 text-xs sm:gap-2 sm:text-sm">
             <a href="#frontpage" className={`rounded-full px-2.5 py-1 transition-all duration-300 sm:px-3 ${isDarkMode ? 'text-slate-200 hover:bg-cyan-400/10 hover:text-cyan-300' : 'text-slate-700 hover:bg-cyan-500/10 hover:text-cyan-700'}`}>Front page</a>
             <a href="#about" className={`rounded-full px-2.5 py-1 transition-all duration-300 sm:px-3 ${isDarkMode ? 'text-slate-200 hover:bg-cyan-400/10 hover:text-cyan-300' : 'text-slate-700 hover:bg-cyan-500/10 hover:text-cyan-700'}`}>About</a>
             <a href="#projects" className={`rounded-full px-2.5 py-1 transition-all duration-300 sm:px-3 ${isDarkMode ? 'text-slate-200 hover:bg-cyan-400/10 hover:text-cyan-300' : 'text-slate-700 hover:bg-cyan-500/10 hover:text-cyan-700'}`}>Projects</a>
@@ -200,12 +220,12 @@ export default function Home() {
 
       <div
         aria-hidden="true"
-        className={`pointer-events-none fixed z-30 h-12 w-12 rounded-[50%] border-2 border-cyan-300 bg-cyan-500/40 shadow-[0_0_60px_rgba(34,211,238,0.6)] backdrop-blur-md transition-all duration-200 sm:h-14 sm:w-14 ${isCursorActive ? 'scale-100' : 'scale-110 opacity-100'}`}
-        style={{ left: cursorPosition.x, top: cursorPosition.y, transform: `translate(-50%, -50%) ${!isCursorActive ? 'scale(1.1)' : 'scale(1)'}` }}
+        className={`pointer-events-none fixed z-30 h-12 w-12 rounded-[50%] border-2 border-cyan-300 bg-cyan-500/40 shadow-[0_0_60px_rgba(34,211,238,0.6)] backdrop-blur-md transition-all duration-100 sm:h-14 sm:w-14`}
+        style={{ left: `${cursorPosition.x}px`, top: `${cursorPosition.y}px`, transform: 'translate(-50%, -50%)' }}
       >
         <div className="absolute inset-1 rounded-[50%] border border-cyan-200/60" />
         <div className="absolute left-1/2 top-1/2 h-3 w-3 -translate-x-1/2 -translate-y-1/2 rounded-full bg-cyan-300/95" />
-        <div className={`absolute left-1/2 top-full mt-1 h-6 w-1.5 -translate-x-1/2 rounded-full bg-gradient-to-b from-cyan-400 to-cyan-300/40 blur-[1px] ${isCursorActive ? 'opacity-0' : 'opacity-100'}`} />
+        <div className={`absolute left-1/2 top-full w-0 h-0 border-l-[12px] border-r-[12px] border-t-[24px] border-l-transparent border-r-transparent transition-opacity duration-200 ${isCursorActive ? 'opacity-0' : 'opacity-100'}`} style={{ borderTopColor: 'rgba(34, 211, 238, 0.5)', marginLeft: '-12px' }} />
       </div>
 
       {isDarkMode && (
