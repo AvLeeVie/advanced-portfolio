@@ -89,6 +89,16 @@ export default function Home() {
         <title>Dustin Lee A. Oliganga | Tech Portfolio</title>
         <style>{`
           .theme-switch { --toggle-size: 20px; --container-width: 5.625em; --container-height: 2.5em; --container-radius: 0.38em; --container-light-bg: #5caad4; --container-night-bg: #1b1e36; --circle-container-diameter: 3.375em; --sun-moon-diameter: 2.125em; --sun-bg: #f5c518; --moon-bg: #d8d4c0; --spot-color: #9b9787; --circle-container-offset: calc((var(--circle-container-diameter) - var(--container-height)) / 2 * -1); display: inline-block; }
+          @media (max-width: 640px) {
+            .theme-switch {
+              --toggle-size: 18px;
+              --container-width: 4.3em;
+              --container-height: 1.9em;
+              --container-radius: 0.3em;
+              --circle-container-diameter: 2.65em;
+              --sun-moon-diameter: 1.65em;
+            }
+          }
           .theme-switch__container { width: var(--container-width); height: var(--container-height); background-color: var(--container-light-bg); border-radius: var(--container-radius); overflow: hidden; cursor: pointer; position: relative; background-image: linear-gradient(to bottom, var(--container-light-bg) 0%, #4a92bd 100%); transition: all 0.5s; box-shadow: 0 0 0 2px rgba(0,0,0,0.1); }
           .theme-switch__checkbox { display: none; }
           .theme-switch__circle-container { width: var(--circle-container-diameter); height: var(--circle-container-diameter); background-color: rgba(255, 255, 255, 0.1); position: absolute; left: var(--circle-container-offset); top: var(--circle-container-offset); border-radius: var(--container-radius); display: flex; transition: 0.3s; pointer-events: none; }
@@ -109,7 +119,7 @@ export default function Home() {
       <div className={`fixed inset-0 -z-50 transition-colors ${isDarkMode ? 'duration-[300ms] bg-[#030712]' : 'duration-[2000ms] bg-gradient-to-br from-slate-100 via-sky-100 to-cyan-200'}`}></div>
       {!isDarkMode && (
         <div className="hidden sm:block fixed top-10 left-1/2 -translate-x-1/2 w-[360px] md:w-[520px] md:h-[520px] h-[360px] rounded-full opacity-70 pointer-events-none -z-20 blur-3xl"
-          style={{ background: 'radial-gradient(circle, rgba(56,189,248,0.18) 0%, transparent 55%)' }}
+          style={{ background: 'radial-gradient(circle, rgba(56,ss189,248,0.18) 0%, transparent 55%)' }}
         ></div>
       )}
 

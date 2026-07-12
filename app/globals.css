@@ -55,6 +55,17 @@ body {
   display: inline-block;
 }
 
+@media (max-width: 640px) {
+  .theme-switch {
+    --toggle-size: 24px;
+    --container-width: 4.4em;
+    --container-height: 2em;
+    --container-radius: 0.3em;
+    --circle-container-diameter: 2.7em;
+    --sun-moon-diameter: 1.7em;
+  }
+}
+
 .theme-switch,
 .theme-switch *,
 .theme-switch *::before,
