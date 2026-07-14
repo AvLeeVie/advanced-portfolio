@@ -13,6 +13,11 @@ export default function Home() {
     typeof window !== "undefined" ? { x: window.innerWidth / 2, y: window.innerHeight / 2 } : { x: 0, y: 0 }
   );
   const [isCursorActive, setIsCursorActive] = useState(true);
+  const [rocketPosition, setRocketPosition] = useState(() =>
+    typeof window !== "undefined" ? { x: window.innerWidth * 0.82, y: window.innerHeight * 0.2 } : { x: 0, y: 0 }
+  );
+  const [isDraggingRocket, setIsDraggingRocket] = useState(false);
+  const [rocketDragOffset, setRocketDragOffset] = useState({ x: 0, y: 0 });
   const heroRef = useRef<HTMLDivElement>(null);
   const projectsRef = useRef<HTMLDivElement>(null);
   const galleryRef = useRef<HTMLDivElement>(null);
@@ -88,6 +93,59 @@ export default function Home() {
     return () => window.cancelAnimationFrame(animationFrame);
   }, [isCursorActive]);
 
+  useEffect(() => {
+    if (typeof window === "undefined" || isDraggingRocket) return;
+
+    let animationFrame = 0;
+    let time = 0;
+
+    const driftRocket = () => {
+      const baseX = window.innerWidth * 0.82;
+      const baseY = window.innerHeight * 0.2;
+
+      setRocketPosition((prev) => {
+        const targetX = baseX + Math.sin(time * 0.7) * 28;
+        const targetY = baseY + Math.cos(time * 0.45) * 20;
+        const nextX = prev.x + (targetX - prev.x) * 0.03;
+        const nextY = prev.y + (targetY - prev.y) * 0.03;
+        time += 0.01;
+        return { x: nextX, y: nextY };
+      });
+
+      animationFrame = window.requestAnimationFrame(driftRocket);
+    };
+
+    animationFrame = window.requestAnimationFrame(driftRocket);
+    return () => window.cancelAnimationFrame(animationFrame);
+  }, [isDraggingRocket]);
+
+  useEffect(() => {
+    if (!isDraggingRocket || typeof window === "undefined") return;
+
+    const handlePointerMove = (event: PointerEvent) => {
+      setRocketPosition({ x: event.clientX - rocketDragOffset.x, y: event.clientY - rocketDragOffset.y });
+    };
+
+    const handlePointerUp = () => setIsDraggingRocket(false);
+
+    window.addEventListener("pointermove", handlePointerMove);
+    window.addEventListener("pointerup", handlePointerUp);
+    window.addEventListener("pointercancel", handlePointerUp);
+
+    return () => {
+      window.removeEventListener("pointermove", handlePointerMove);
+      window.removeEventListener("pointerup", handlePointerUp);
+      window.removeEventListener("pointercancel", handlePointerUp);
+    };
+  }, [isDraggingRocket, rocketDragOffset]);
+
+  const handleRocketPointerDown = (event: any) => {
+    event.preventDefault();
+    const rect = event.currentTarget.getBoundingClientRect();
+    setRocketDragOffset({ x: event.clientX - rect.left, y: event.clientY - rect.top });
+    setIsDraggingRocket(true);
+  };
+
   const particlesInit = useCallback(async (engine: any) => {
     await loadSlim(engine);
   }, []);
@@ -97,16 +155,32 @@ export default function Home() {
     fpsLimit: 120,
     interactivity: {
       events: { onHover: { enable: true, mode: "grab" } },
-      modes: { grab: { distance: 200, links: { opacity: 0.8 } } },
+      modes: {
+        grab: { distance: 240, links: { opacity: 0.95, color: "#3b82f6", width: 1.3 } },
+      },
     },
     particles: {
-      color: { value: "#3b82f6" },
-      links: { color: "#3b82f6", distance: 150, enable: true, opacity: 0.4, width: 1.5 },
-      move: { enable: true, speed: 1.5, direction: "none" as const, outModes: { default: "out" as const } },
-      number: { value: 70, density: { enable: true, area: 800 } },
-      opacity: { value: 0.6 }, 
-      shape: { type: "circle" },
-      size: { value: { min: 3, max: 6 } },
+      color: { value: ["#3b82f6", "#60a5fa", "#93c5fd", "#0f172a"] },
+      links: { color: "#60a5fa", distance: 120, enable: true, opacity: 0.35, width: 1.2 },
+      move: {
+        enable: true,
+        speed: 1.05,
+        direction: "none" as const,
+        random: true,
+        straightLines: { enable: false },
+        outModes: { default: "out" as const },
+      },
+      number: { value: 95, density: { enable: true, area: 750 } },
+      opacity: { value: { min: 0.25, max: 0.85 } },
+      shape: {
+        type: ["circle", "square", "polygon"],
+        options: {
+          square: { fill: true },
+          polygon: { sides: 5 },
+        },
+      },
+      size: { value: { min: 2, max: 5 } },
+      rotate: { enable: true, direction: "random" as const, animation: { enable: true, speed: 0.8 } },
     },
     detectRetina: true,
   };
@@ -116,17 +190,32 @@ export default function Home() {
     fpsLimit: 120,
     interactivity: {
       events: { onHover: { enable: true, mode: "grab" } },
-      modes: { grab: { distance: 250, links: { opacity: 0.8, color: "#38bdf8", width: 2 } } },
+      modes: {
+        grab: { distance: 280, links: { opacity: 0.98, color: "#7dd3fc", width: 1.5 } },
+      },
     },
     particles: {
-      color: { value: ["#e0f2fe", "#bae6fd", "#7dd3fc", "#38bdf8", "#0284c7"] },
-      links: { color: "#0284c7", distance: 150, enable: true, opacity: 0.2, width: 1.5 },
-      move: { enable: true, speed: 0.8, direction: "none" as const, outModes: { default: "out" as const } },
-      number: { value: 60, density: { enable: true, area: 800 } },
-      opacity: { value: 0.9 }, 
-      shape: { type: ["polygon", "circle"], options: { polygon: { sides: 6 } } },
-      size: { value: { min: 4, max: 9 } },
-      rotate: { enable: true, direction: "random" as const, animation: { enable: true, speed: 1 } }
+      color: { value: ["#f8fafc", "#bae6fd", "#7dd3fc", "#38bdf8", "#0284c7", "#0ea5e9"] },
+      links: { color: "#7dd3fc", distance: 120, enable: true, opacity: 0.28, width: 1.1 },
+      move: {
+        enable: true,
+        speed: 0.95,
+        direction: "none" as const,
+        random: true,
+        straightLines: { enable: false },
+        outModes: { default: "out" as const },
+      },
+      number: { value: 80, density: { enable: true, area: 750 } },
+      opacity: { value: { min: 0.3, max: 0.98 } },
+      shape: {
+        type: ["polygon", "circle", "square"],
+        options: {
+          polygon: { sides: 6 },
+          square: { fill: true },
+        },
+      },
+      size: { value: { min: 3, max: 8 } },
+      rotate: { enable: true, direction: "random" as const, animation: { enable: true, speed: 1.0 } },
     },
     detectRetina: true,
   };
@@ -172,9 +261,63 @@ export default function Home() {
       <div className={`fixed inset-0 -z-50 transition-colors ${isDarkMode ? 'duration-[300ms] bg-[#030712]' : 'duration-[2000ms] bg-gradient-to-br from-slate-100 via-sky-100 to-cyan-200'}`}></div>
       {!isDarkMode && (
         <div className="hidden sm:block fixed top-10 left-1/2 -translate-x-1/2 w-[360px] md:w-[520px] md:h-[520px] h-[360px] rounded-full opacity-70 pointer-events-none -z-20 blur-3xl"
-          style={{ background: 'radial-gradient(circle, rgba(56,ss189,248,0.18) 0%, transparent 55%)' }}
+          style={{ background: 'radial-gradient(circle, rgba(56,189,248,0.18) 0%, transparent 55%)' }}
         ></div>
       )}
+
+      <div
+        className="pointer-events-none fixed z-[-30] rounded-full mix-blend-screen blur-[80px] opacity-70 transition-transform duration-300"
+        style={{
+          width: isDarkMode ? 320 : 260,
+          height: isDarkMode ? 320 : 260,
+          left: cursorPosition.x,
+          top: cursorPosition.y,
+          transform: 'translate(-50%, -50%)',
+          background: isDarkMode
+            ? 'radial-gradient(circle, rgba(125, 211, 252, 0.55) 0%, rgba(56, 189, 248, 0.25) 35%, rgba(2, 132, 199, 0.1) 60%, transparent 100%)'
+            : 'radial-gradient(circle, rgba(147, 197, 253, 0.65) 0%, rgba(96, 165, 250, 0.3) 35%, rgba(59, 130, 246, 0.12) 60%, transparent 100%)',
+          boxShadow: isDarkMode
+            ? '0 0 120px 40px rgba(56, 189, 248, 0.18)'
+            : '0 0 120px 40px rgba(96, 165, 250, 0.16)',
+        }}
+      />
+
+      <div
+        className="pointer-events-none fixed z-[-25] rounded-full blur-[70px] opacity-40"
+        style={{
+          width: isDarkMode ? 180 : 140,
+          height: isDarkMode ? 180 : 140,
+          left: cursorPosition.x + 26,
+          top: cursorPosition.y - 24,
+          transform: 'translate(-50%, -50%)',
+          background: isDarkMode
+            ? 'radial-gradient(circle, rgba(255,255,255,0.9) 0%, rgba(186,230,253,0.3) 30%, transparent 70%)'
+            : 'radial-gradient(circle, rgba(255,255,255,0.8) 0%, rgba(191,219,254,0.25) 30%, transparent 70%)',
+        }}
+      />
+
+      <div
+        className={`fixed z-[15] select-none transition-transform duration-200 ${isDraggingRocket ? 'scale-95' : 'scale-100'}`}
+        style={{ left: rocketPosition.x, top: rocketPosition.y, transform: 'translate(-50%, -50%)' }}
+        onPointerDown={handleRocketPointerDown}
+      >
+        <div className="relative flex items-center justify-center">
+          <div className={`absolute inset-0 rounded-full blur-[24px] ${isDarkMode ? 'bg-cyan-400/25' : 'bg-sky-300/35'}`} style={{ width: 92, height: 92 }} />
+          <div className={`absolute inset-2 rounded-full blur-[20px] ${isDarkMode ? 'bg-sky-200/20' : 'bg-white/35'}`} style={{ width: 72, height: 72 }} />
+          <svg
+            viewBox="0 0 128 128"
+            className="relative h-16 w-16 drop-shadow-[0_0_18px_rgba(96,165,250,0.45)]"
+            aria-label="Draggable rocket"
+          >
+            <path d="M64 16c12 18 26 34 38 48-11 1-23 4-33 8l-5 3-5-3c-10-4-22-7-33-8 12-14 26-30 38-48Z" fill={isDarkMode ? "#f8fafc" : "#0f172a"} />
+            <path d="M44 72c8 5 16 8 20 10 4-2 12-5 20-10l8 18c-8 4-16 6-28 6-12 0-20-2-28-6l8-18Z" fill={isDarkMode ? "#7dd3fc" : "#3b82f6"} />
+            <path d="M46 64c9-3 17-5 18-5 1 0 9 2 18 5l-4 21c-4 2-9 3-14 3-5 0-10-1-14-3l-4-21Z" fill={isDarkMode ? "#bae6fd" : "#93c5fd"} />
+            <path d="M64 38c7 8 11 14 12 20-5 2-12 3-12 3s-7-1-12-3c1-6 5-12 12-20Z" fill={isDarkMode ? "#e2e8f0" : "#eff6ff"} />
+            <path d="M57 18c2 4 4 7 7 10 0 0-2 1-7 1-5 0-7-1-7-1 3-3 5-6 7-10Z" fill={isDarkMode ? "#38bdf8" : "#60a5fa"} />
+            <path d="M64 24l6 8h-12l6-8Z" fill={isDarkMode ? "#0f172a" : "#1e3a8a"} />
+          </svg>
+        </div>
+      </div>
 
       {/* Theme switch moved to global layout */}
 
@@ -268,16 +411,17 @@ export default function Home() {
           exit="hidden"
           variants={revealVariants}
           transition={{ duration: 0.75, ease: "easeInOut" }}
-          className={`scroll-mt-28 backdrop-blur-md p-4 sm:p-6 md:p-8 rounded-2xl sm:rounded-3xl border shadow-2xl relative overflow-hidden group transition-all ${isDarkMode ? 'duration-[300ms] bg-gradient-to-br from-slate-900 to-slate-950 border-blue-950' : 'duration-[2000ms] bg-gradient-to-br from-white via-slate-50 to-sky-100 border-slate-200'}`}
+          className={`scroll-mt-28 backdrop-blur-xl p-4 sm:p-6 md:p-8 rounded-2xl sm:rounded-3xl border shadow-2xl relative overflow-hidden group transition-all ${isDarkMode ? 'duration-[300ms] bg-slate-900/55 border-blue-900/50' : 'duration-[2000ms] bg-white/60 border-slate-200/70'}`}
         >
           <div className={`absolute top-0 left-0 w-full h-1 group-hover:scale-x-110 transition-transform duration-1000 origin-left ${isDarkMode ? 'bg-gradient-to-r from-cyan-600 to-blue-500' : 'bg-gradient-to-r from-blue-400 to-blue-600'}`}></div>
           <h3 className={`text-xl sm:text-2xl font-bold mb-4 sm:mb-6 transition-colors ${isDarkMode ? 'duration-[300ms] text-cyan-400' : 'duration-[2000ms] text-blue-600'}`}>01. Projects & Experience</h3>
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
-            <article className={`theme-box border p-4 sm:p-6 rounded-2xl sm:rounded-3xl transition-all duration-[2000ms] ${isDarkMode ? 'bg-slate-800/60 border-blue-900/40' : 'bg-white border-slate-300 shadow-[0_20px_50px_-30px_rgba(14,165,233,0.45)]'}`}>
-              <div className="flex items-center justify-between gap-3 mb-4">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
+            <article className={`theme-box border p-4 sm:p-6 rounded-2xl sm:rounded-3xl transition-all duration-[2000ms] backdrop-blur-md ${isDarkMode ? 'bg-slate-800/40 border-blue-900/30 shadow-[0_0_40px_rgba(14,165,233,0.08)]' : 'bg-white/70 border-slate-300/70 shadow-[0_20px_50px_-30px_rgba(14,165,233,0.45)]'}`}>
+              <div className="flex items-start justify-between gap-3 mb-4">
                 <div>
+                  <p className={`text-xs uppercase tracking-[0.25em] mb-2 ${isDarkMode ? 'text-cyan-400/80' : 'text-blue-500'}`}>01</p>
                   <h4 className={`text-xl font-bold transition-colors ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>S.P.A.R.K. Learning Application</h4>
-                  <p className={`text-sm ${isDarkMode ? 'text-slate-300' : 'text-slate-900'}`}>ASL Gamified Web App</p>
+                  <p className={`text-sm mt-1 ${isDarkMode ? 'text-slate-300' : 'text-slate-900'}`}>ASL Gamified Web App</p>
                 </div>
               </div>
               <p className={`font-sans text-sm leading-7 ${isDarkMode ? 'text-slate-300' : 'text-slate-900'}`}>
@@ -285,11 +429,12 @@ export default function Home() {
               </p>
             </article>
 
-            <article className={`theme-box border p-4 sm:p-6 rounded-2xl sm:rounded-3xl transition-all duration-[2000ms] ${isDarkMode ? 'bg-slate-800/60 border-blue-900/40' : 'bg-white border-slate-300 shadow-[0_20px_50px_-30px_rgba(14,165,233,0.45)]'}`}>
-              <div className="flex items-center justify-between gap-3 mb-4">
+            <article className={`theme-box border p-4 sm:p-6 rounded-2xl sm:rounded-3xl transition-all duration-[2000ms] backdrop-blur-md ${isDarkMode ? 'bg-slate-800/40 border-blue-900/30 shadow-[0_0_40px_rgba(14,165,233,0.08)]' : 'bg-white/70 border-slate-300/70 shadow-[0_20px_50px_-30px_rgba(14,165,233,0.45)]'}`}>
+              <div className="flex items-start justify-between gap-3 mb-4">
                 <div>
+                  <p className={`text-xs uppercase tracking-[0.25em] mb-2 ${isDarkMode ? 'text-cyan-400/80' : 'text-blue-500'}`}>02</p>
                   <h4 className={`text-xl font-bold transition-colors ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>Slimy Adventure</h4>
-                  <p className={`text-sm ${isDarkMode ? 'text-slate-300' : 'text-slate-900'}`}>3D Godot Game</p>
+                  <p className={`text-sm mt-1 ${isDarkMode ? 'text-slate-300' : 'text-slate-900'}`}>3D Godot Game</p>
                 </div>
               </div>
               <p className={`font-sans text-sm leading-7 ${isDarkMode ? 'text-slate-300' : 'text-slate-900'}`}>
@@ -297,11 +442,12 @@ export default function Home() {
               </p>
             </article>
 
-            <article className={`theme-box border p-4 sm:p-6 rounded-2xl sm:rounded-3xl transition-all duration-[2000ms] ${isDarkMode ? 'bg-slate-800/60 border-blue-900/40' : 'bg-white border-slate-300 shadow-[0_20px_50px_-30px_rgba(14,165,233,0.45)]'}`}>
-              <div className="flex items-center justify-between gap-3 mb-4">
+            <article className={`theme-box border p-4 sm:p-6 rounded-2xl sm:rounded-3xl transition-all duration-[2000ms] backdrop-blur-md ${isDarkMode ? 'bg-slate-800/40 border-blue-900/30 shadow-[0_0_40px_rgba(14,165,233,0.08)]' : 'bg-white/70 border-slate-300/70 shadow-[0_20px_50px_-30px_rgba(14,165,233,0.45)]'}`}>
+              <div className="flex items-start justify-between gap-3 mb-4">
                 <div>
+                  <p className={`text-xs uppercase tracking-[0.25em] mb-2 ${isDarkMode ? 'text-cyan-400/80' : 'text-blue-500'}`}>03</p>
                   <h4 className={`text-xl font-bold transition-colors ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>Corruption Tactics</h4>
-                  <p className={`text-sm ${isDarkMode ? 'text-slate-300' : 'text-slate-900'}`}>2D Fighting Game</p>
+                  <p className={`text-sm mt-1 ${isDarkMode ? 'text-slate-300' : 'text-slate-900'}`}>2D Fighting Game</p>
                 </div>
               </div>
               <p className={`font-sans text-sm leading-7 ${isDarkMode ? 'text-slate-300' : 'text-slate-900'}`}>
