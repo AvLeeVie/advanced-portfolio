@@ -2,6 +2,7 @@
 
 import Head from 'next/head';
 import { useCallback, useEffect, useRef, useState } from "react";
+import * as THREE from 'three';
 import Particles from "react-tsparticles";
 import { loadSlim } from "tsparticles-slim";
 import Image from 'next/image';
@@ -17,6 +18,7 @@ export default function Home() {
   const projectsRef = useRef<HTMLDivElement>(null);
   const galleryRef = useRef<HTMLDivElement>(null);
   const achievementsRef = useRef<HTMLDivElement>(null);
+  const galaxyContainerRef = useRef<HTMLDivElement>(null);
 
   const heroInView = useInView(heroRef, { amount: 0.2, once: false });
   const projectsInView = useInView(projectsRef, { amount: 0.2, once: false });
@@ -92,21 +94,129 @@ export default function Home() {
     await loadSlim(engine);
   }, []);
 
-  const generateGalaxy = () => {
-    const ring = isDarkMode
-      ? 'radial-gradient(circle, rgba(125, 211, 252, 0.28) 0%, rgba(14, 165, 233, 0.14) 22%, rgba(15, 23, 42, 0.06) 52%, transparent 80%)'
-      : 'radial-gradient(circle, rgba(59, 130, 246, 0.22) 0%, rgba(96, 165, 250, 0.16) 24%, rgba(191, 219, 254, 0.08) 52%, transparent 80%)';
-    const core = isDarkMode
-      ? 'radial-gradient(circle, rgba(255, 255, 255, 0.9) 0%, rgba(186, 230, 253, 0.35) 18%, transparent 55%)'
-      : 'radial-gradient(circle, rgba(255, 255, 255, 0.95) 0%, rgba(191, 219, 254, 0.35) 18%, transparent 55%)';
-    const stars = isDarkMode
-      ? 'radial-gradient(circle, rgba(168, 235, 255, 0.8) 0%, rgba(56, 189, 248, 0.15) 30%, transparent 68%)'
-      : 'radial-gradient(circle, rgba(147, 197, 253, 0.75) 0%, rgba(59, 130, 246, 0.12) 28%, transparent 65%)';
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const container = galaxyContainerRef.current;
+    if (!container) return;
 
-    return { ring, core, stars };
-  };
+    const width = container.clientWidth || window.innerWidth;
+    const height = container.clientHeight || window.innerHeight;
 
-  const galaxy = generateGalaxy();
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 1000);
+    camera.position.set(0, 0, 200);
+
+    const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+    renderer.setPixelRatio(window.devicePixelRatio);
+    renderer.setSize(width, height);
+    renderer.setClearColor(0x000000, 0);
+    renderer.domElement.style.position = 'absolute';
+    renderer.domElement.style.inset = '0';
+    container.appendChild(renderer.domElement);
+
+    const parameters = {
+      count: 14000,
+      size: 0.42,
+      radius: 140,
+      branches: 5,
+      spin: 0.65,
+      randomness: 0.34,
+      randomnessPower: 2.5,
+      insideColor: isDarkMode ? '#93c5fd' : '#1d4ed8',
+      outsideColor: isDarkMode ? '#38bdf8' : '#60a5fa',
+    };
+
+    let points: THREE.Points | null = null;
+
+    const generateGalaxy = () => {
+      if (points !== null) {
+        scene.remove(points);
+        points.geometry.dispose();
+        (points.material as THREE.Material).dispose();
+      }
+
+      const geometry = new THREE.BufferGeometry();
+      const positions = new Float32Array(parameters.count * 3);
+      const colors = new Float32Array(parameters.count * 3);
+      const colorInside = new THREE.Color(parameters.insideColor);
+      const colorOutside = new THREE.Color(parameters.outsideColor);
+
+      for (let i = 0; i < parameters.count; i += 1) {
+        const i3 = i * 3;
+        const radius = Math.random() * parameters.radius;
+        const branchAngle = ((i % parameters.branches) / parameters.branches) * Math.PI * 2;
+        const spinAngle = radius * parameters.spin;
+        const randomX = Math.pow(Math.random(), parameters.randomnessPower) * (Math.random() < 0.5 ? 1 : -1) * parameters.randomness * radius;
+        const randomY = Math.pow(Math.random(), parameters.randomnessPower) * (Math.random() < 0.5 ? 1 : -1) * parameters.randomness * radius;
+        const randomZ = Math.pow(Math.random(), parameters.randomnessPower) * (Math.random() < 0.5 ? 1 : -1) * parameters.randomness * radius;
+
+        positions[i3] = Math.cos(branchAngle + spinAngle) * radius + randomX;
+        positions[i3 + 1] = randomY * 0.28;
+        positions[i3 + 2] = Math.sin(branchAngle + spinAngle) * radius + randomZ;
+
+        const mixedColor = colorInside.clone();
+        mixedColor.lerp(colorOutside, radius / parameters.radius);
+
+        colors[i3] = mixedColor.r;
+        colors[i3 + 1] = mixedColor.g;
+        colors[i3 + 2] = mixedColor.b;
+      }
+
+      geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+      geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+
+      const material = new THREE.PointsMaterial({
+        size: parameters.size,
+        sizeAttenuation: true,
+        depthWrite: false,
+        blending: THREE.AdditiveBlending,
+        vertexColors: true,
+        transparent: true,
+      });
+
+      points = new THREE.Points(geometry, material);
+      scene.add(points);
+    };
+
+    generateGalaxy();
+
+    const ambientLight = new THREE.AmbientLight(isDarkMode ? '#bde4ff' : '#dbeafe', 1.3);
+    scene.add(ambientLight);
+
+    const render = () => {
+      if (points) {
+        points.rotation.y += 0.0012;
+        points.rotation.z += 0.0009;
+      }
+      renderer.render(scene, camera);
+      requestAnimationFrame(render);
+    };
+
+    let frameId = requestAnimationFrame(render);
+
+    const handleResize = () => {
+      const newWidth = container.clientWidth || window.innerWidth;
+      const newHeight = container.clientHeight || window.innerHeight;
+      camera.aspect = newWidth / newHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(newWidth, newHeight);
+    };
+
+    window.addEventListener('resize', handleResize);
+
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      cancelAnimationFrame(frameId);
+      if (points) {
+        scene.remove(points);
+        points.geometry.dispose();
+        (points.material as THREE.Material).dispose();
+      }
+      scene.remove(ambientLight);
+      renderer.dispose();
+      if (renderer.domElement.parentNode) renderer.domElement.parentNode.removeChild(renderer.domElement);
+    };
+  }, [isDarkMode]);
 
   const lightParticleOptions = {
     background: { color: { value: "transparent" } },
@@ -218,33 +328,7 @@ export default function Home() {
 
       <div className={`fixed inset-0 -z-50 transition-colors ${isDarkMode ? 'duration-[300ms] bg-[#030712]' : 'duration-[2000ms] bg-gradient-to-br from-slate-100 via-sky-100 to-cyan-200'}`}></div>
 
-      <div className="fixed inset-0 -z-30 pointer-events-none overflow-hidden">
-        <div
-          className="absolute left-1/2 top-[12%] h-[700px] w-[700px] -translate-x-1/2 rounded-full blur-[120px]"
-          style={{ background: galaxy.ring, opacity: isDarkMode ? 0.95 : 0.72 }}
-        />
-        <div
-          className="absolute right-10 top-[20%] h-[420px] w-[420px] rounded-full blur-[96px]"
-          style={{ background: galaxy.core, opacity: isDarkMode ? 0.78 : 0.55 }}
-        />
-        <div
-          className="absolute left-16 top-[32%] h-[260px] w-[260px] rounded-full blur-[80px]"
-          style={{ background: galaxy.stars, opacity: isDarkMode ? 0.85 : 0.65 }}
-        />
-        <div
-          className="absolute left-[18%] top-[25%] h-1 w-1 rounded-full bg-white/90 shadow-[0_0_20px_4px_rgba(255,255,255,0.55)]"
-        />
-        <div
-          className="absolute right-[14%] top-[22%] h-1 w-1 rounded-full bg-cyan-200/90 shadow-[0_0_20px_4px_rgba(56,189,248,0.4)]"
-        />
-        <div
-          className="absolute left-[29%] top-[30%] h-1 w-1 rounded-full bg-sky-200/90 shadow-[0_0_20px_4px_rgba(147,197,253,0.4)]"
-        />
-        <div
-          className="absolute left-[40%] top-[18%] h-[1px] w-[140px] opacity-40"
-          style={{ background: isDarkMode ? 'linear-gradient(90deg, rgba(99,179,237,0.48), transparent)' : 'linear-gradient(90deg, rgba(59,130,246,0.35), transparent)' }}
-        />
-      </div>
+      <div ref={galaxyContainerRef} className="fixed inset-0 -z-30 pointer-events-none" />
 
       {!isDarkMode && (
         <div className="hidden sm:block fixed top-10 left-1/2 -translate-x-1/2 w-[360px] md:w-[520px] md:h-[520px] h-[360px] rounded-full opacity-70 pointer-events-none -z-20 blur-3xl"
