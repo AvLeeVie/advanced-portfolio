@@ -118,10 +118,10 @@ export default function Home() {
       count: 14000,
       size: 0.42,
       radius: 140,
-      branches: 5,
-      spin: 0.65,
-      randomness: 0.34,
-      randomnessPower: 2.5,
+      branches: 2,
+      spin: 0.52,
+      randomness: 0.28,
+      randomnessPower: 1.9,
       insideColor: isDarkMode ? '#93c5fd' : '#1d4ed8',
       outsideColor: isDarkMode ? '#38bdf8' : '#60a5fa',
     };
@@ -185,8 +185,8 @@ export default function Home() {
 
     const render = () => {
       if (points) {
-        points.rotation.y += 0.0012;
-        points.rotation.z += 0.0009;
+        points.rotation.y += 0.00045;
+        points.rotation.z += 0.0003;
       }
       renderer.render(scene, camera);
       requestAnimationFrame(render);
