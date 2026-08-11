@@ -119,9 +119,9 @@ export default function Home() {
       size: 0.42,
       radius: 140,
       branches: 2,
-      spin: 0.52,
-      randomness: 0.28,
-      randomnessPower: 1.9,
+      spin: 0.95,
+      randomness: 0.18,
+      randomnessPower: 2.4,
       insideColor: isDarkMode ? '#93c5fd' : '#1d4ed8',
       outsideColor: isDarkMode ? '#38bdf8' : '#60a5fa',
     };
@@ -143,16 +143,17 @@ export default function Home() {
 
       for (let i = 0; i < parameters.count; i += 1) {
         const i3 = i * 3;
-        const radius = Math.random() * parameters.radius;
+        const radius = Math.pow(Math.random(), 1.5) * parameters.radius;
         const branchAngle = ((i % parameters.branches) / parameters.branches) * Math.PI * 2;
         const spinAngle = radius * parameters.spin;
-        const randomX = Math.pow(Math.random(), parameters.randomnessPower) * (Math.random() < 0.5 ? 1 : -1) * parameters.randomness * radius;
-        const randomY = Math.pow(Math.random(), parameters.randomnessPower) * (Math.random() < 0.5 ? 1 : -1) * parameters.randomness * radius;
-        const randomZ = Math.pow(Math.random(), parameters.randomnessPower) * (Math.random() < 0.5 ? 1 : -1) * parameters.randomness * radius;
+        const armAngle = branchAngle + spinAngle;
+        const randomX = (Math.random() - 0.5) * parameters.randomness * radius * 0.7;
+        const randomY = (Math.random() - 0.5) * 0.8 * (parameters.randomness * radius * 0.25);
+        const randomZ = (Math.random() - 0.5) * parameters.randomness * radius * 0.7;
 
-        positions[i3] = Math.cos(branchAngle + spinAngle) * radius + randomX;
-        positions[i3 + 1] = randomY * 0.28;
-        positions[i3 + 2] = Math.sin(branchAngle + spinAngle) * radius + randomZ;
+        positions[i3] = Math.cos(armAngle) * radius + randomX;
+        positions[i3 + 1] = randomY;
+        positions[i3 + 2] = Math.sin(armAngle) * radius + randomZ;
 
         const mixedColor = colorInside.clone();
         mixedColor.lerp(colorOutside, radius / parameters.radius);
