@@ -13,11 +13,6 @@ export default function Home() {
     typeof window !== "undefined" ? { x: window.innerWidth / 2, y: window.innerHeight / 2 } : { x: 0, y: 0 }
   );
   const [isCursorActive, setIsCursorActive] = useState(true);
-  const [rocketPosition, setRocketPosition] = useState(() =>
-    typeof window !== "undefined" ? { x: window.innerWidth * 0.82, y: window.innerHeight * 0.2 } : { x: 0, y: 0 }
-  );
-  const [isDraggingRocket, setIsDraggingRocket] = useState(false);
-  const [rocketDragOffset, setRocketDragOffset] = useState({ x: 0, y: 0 });
   const heroRef = useRef<HTMLDivElement>(null);
   const projectsRef = useRef<HTMLDivElement>(null);
   const galleryRef = useRef<HTMLDivElement>(null);
@@ -93,62 +88,25 @@ export default function Home() {
     return () => window.cancelAnimationFrame(animationFrame);
   }, [isCursorActive]);
 
-  useEffect(() => {
-    if (typeof window === "undefined" || isDraggingRocket) return;
-
-    let animationFrame = 0;
-    let time = 0;
-
-    const driftRocket = () => {
-      const baseX = window.innerWidth * 0.82;
-      const baseY = window.innerHeight * 0.2;
-
-      setRocketPosition((prev) => {
-        const targetX = baseX + Math.sin(time * 0.7) * 28;
-        const targetY = baseY + Math.cos(time * 0.45) * 20;
-        const nextX = prev.x + (targetX - prev.x) * 0.03;
-        const nextY = prev.y + (targetY - prev.y) * 0.03;
-        time += 0.01;
-        return { x: nextX, y: nextY };
-      });
-
-      animationFrame = window.requestAnimationFrame(driftRocket);
-    };
-
-    animationFrame = window.requestAnimationFrame(driftRocket);
-    return () => window.cancelAnimationFrame(animationFrame);
-  }, [isDraggingRocket]);
-
-  useEffect(() => {
-    if (!isDraggingRocket || typeof window === "undefined") return;
-
-    const handlePointerMove = (event: PointerEvent) => {
-      setRocketPosition({ x: event.clientX - rocketDragOffset.x, y: event.clientY - rocketDragOffset.y });
-    };
-
-    const handlePointerUp = () => setIsDraggingRocket(false);
-
-    window.addEventListener("pointermove", handlePointerMove);
-    window.addEventListener("pointerup", handlePointerUp);
-    window.addEventListener("pointercancel", handlePointerUp);
-
-    return () => {
-      window.removeEventListener("pointermove", handlePointerMove);
-      window.removeEventListener("pointerup", handlePointerUp);
-      window.removeEventListener("pointercancel", handlePointerUp);
-    };
-  }, [isDraggingRocket, rocketDragOffset]);
-
-  const handleRocketPointerDown = (event: any) => {
-    event.preventDefault();
-    const rect = event.currentTarget.getBoundingClientRect();
-    setRocketDragOffset({ x: event.clientX - rect.left, y: event.clientY - rect.top });
-    setIsDraggingRocket(true);
-  };
-
   const particlesInit = useCallback(async (engine: any) => {
     await loadSlim(engine);
   }, []);
+
+  const generateGalaxy = () => {
+    const ring = isDarkMode
+      ? 'radial-gradient(circle, rgba(125, 211, 252, 0.28) 0%, rgba(14, 165, 233, 0.14) 22%, rgba(15, 23, 42, 0.06) 52%, transparent 80%)'
+      : 'radial-gradient(circle, rgba(59, 130, 246, 0.22) 0%, rgba(96, 165, 250, 0.16) 24%, rgba(191, 219, 254, 0.08) 52%, transparent 80%)';
+    const core = isDarkMode
+      ? 'radial-gradient(circle, rgba(255, 255, 255, 0.9) 0%, rgba(186, 230, 253, 0.35) 18%, transparent 55%)'
+      : 'radial-gradient(circle, rgba(255, 255, 255, 0.95) 0%, rgba(191, 219, 254, 0.35) 18%, transparent 55%)';
+    const stars = isDarkMode
+      ? 'radial-gradient(circle, rgba(168, 235, 255, 0.8) 0%, rgba(56, 189, 248, 0.15) 30%, transparent 68%)'
+      : 'radial-gradient(circle, rgba(147, 197, 253, 0.75) 0%, rgba(59, 130, 246, 0.12) 28%, transparent 65%)';
+
+    return { ring, core, stars };
+  };
+
+  const galaxy = generateGalaxy();
 
   const lightParticleOptions = {
     background: { color: { value: "transparent" } },
@@ -259,6 +217,35 @@ export default function Home() {
       ></div>
 
       <div className={`fixed inset-0 -z-50 transition-colors ${isDarkMode ? 'duration-[300ms] bg-[#030712]' : 'duration-[2000ms] bg-gradient-to-br from-slate-100 via-sky-100 to-cyan-200'}`}></div>
+
+      <div className="fixed inset-0 -z-30 pointer-events-none overflow-hidden">
+        <div
+          className="absolute left-1/2 top-[12%] h-[700px] w-[700px] -translate-x-1/2 rounded-full blur-[120px]"
+          style={{ background: galaxy.ring, opacity: isDarkMode ? 0.95 : 0.72 }}
+        />
+        <div
+          className="absolute right-10 top-[20%] h-[420px] w-[420px] rounded-full blur-[96px]"
+          style={{ background: galaxy.core, opacity: isDarkMode ? 0.78 : 0.55 }}
+        />
+        <div
+          className="absolute left-16 top-[32%] h-[260px] w-[260px] rounded-full blur-[80px]"
+          style={{ background: galaxy.stars, opacity: isDarkMode ? 0.85 : 0.65 }}
+        />
+        <div
+          className="absolute left-[18%] top-[25%] h-1 w-1 rounded-full bg-white/90 shadow-[0_0_20px_4px_rgba(255,255,255,0.55)]"
+        />
+        <div
+          className="absolute right-[14%] top-[22%] h-1 w-1 rounded-full bg-cyan-200/90 shadow-[0_0_20px_4px_rgba(56,189,248,0.4)]"
+        />
+        <div
+          className="absolute left-[29%] top-[30%] h-1 w-1 rounded-full bg-sky-200/90 shadow-[0_0_20px_4px_rgba(147,197,253,0.4)]"
+        />
+        <div
+          className="absolute left-[40%] top-[18%] h-[1px] w-[140px] opacity-40"
+          style={{ background: isDarkMode ? 'linear-gradient(90deg, rgba(99,179,237,0.48), transparent)' : 'linear-gradient(90deg, rgba(59,130,246,0.35), transparent)' }}
+        />
+      </div>
+
       {!isDarkMode && (
         <div className="hidden sm:block fixed top-10 left-1/2 -translate-x-1/2 w-[360px] md:w-[520px] md:h-[520px] h-[360px] rounded-full opacity-70 pointer-events-none -z-20 blur-3xl"
           style={{ background: 'radial-gradient(circle, rgba(56,189,248,0.18) 0%, transparent 55%)' }}
@@ -296,29 +283,6 @@ export default function Home() {
         }}
       />
 
-      <div
-        className={`fixed z-[15] select-none transition-transform duration-200 ${isDraggingRocket ? 'scale-95' : 'scale-100'}`}
-        style={{ left: rocketPosition.x, top: rocketPosition.y, transform: 'translate(-50%, -50%)' }}
-        onPointerDown={handleRocketPointerDown}
-      >
-        <div className="relative flex items-center justify-center">
-          <div className={`absolute inset-0 rounded-full blur-[24px] ${isDarkMode ? 'bg-cyan-400/25' : 'bg-sky-300/35'}`} style={{ width: 92, height: 92 }} />
-          <div className={`absolute inset-2 rounded-full blur-[20px] ${isDarkMode ? 'bg-sky-200/20' : 'bg-white/35'}`} style={{ width: 72, height: 72 }} />
-          <svg
-            viewBox="0 0 128 128"
-            className="relative h-16 w-16 drop-shadow-[0_0_18px_rgba(96,165,250,0.45)]"
-            aria-label="Draggable rocket"
-          >
-            <path d="M64 16c12 18 26 34 38 48-11 1-23 4-33 8l-5 3-5-3c-10-4-22-7-33-8 12-14 26-30 38-48Z" fill={isDarkMode ? "#f8fafc" : "#0f172a"} />
-            <path d="M44 72c8 5 16 8 20 10 4-2 12-5 20-10l8 18c-8 4-16 6-28 6-12 0-20-2-28-6l8-18Z" fill={isDarkMode ? "#7dd3fc" : "#3b82f6"} />
-            <path d="M46 64c9-3 17-5 18-5 1 0 9 2 18 5l-4 21c-4 2-9 3-14 3-5 0-10-1-14-3l-4-21Z" fill={isDarkMode ? "#bae6fd" : "#93c5fd"} />
-            <path d="M64 38c7 8 11 14 12 20-5 2-12 3-12 3s-7-1-12-3c1-6 5-12 12-20Z" fill={isDarkMode ? "#e2e8f0" : "#eff6ff"} />
-            <path d="M57 18c2 4 4 7 7 10 0 0-2 1-7 1-5 0-7-1-7-1 3-3 5-6 7-10Z" fill={isDarkMode ? "#38bdf8" : "#60a5fa"} />
-            <path d="M64 24l6 8h-12l6-8Z" fill={isDarkMode ? "#0f172a" : "#1e3a8a"} />
-          </svg>
-        </div>
-      </div>
-
       {/* Theme switch moved to global layout */}
 
       <Particles
@@ -329,27 +293,6 @@ export default function Home() {
         className="fixed inset-0 -z-40"
       />
 
-      {isDarkMode && (
-        <div className="hidden md:block fixed -bottom-40 -right-20 w-[640px] h-[640px] md:w-[900px] md:h-[900px] pointer-events-none -z-30 flex items-center justify-center translate-x-1/4 translate-y-1/4">
-          <div 
-            className="absolute w-[1000px] h-[1000px] rounded-full animate-[spin_60s_linear_infinite]"
-            style={{
-              transform: 'rotateX(70deg) rotateZ(-20deg)',
-              background: 'radial-gradient(circle, rgba(255,255,255,1) 0%, rgba(186,230,253,1) 5%, rgba(14,165,233,0.8) 15%, rgba(15,23,42,0.8) 30%, rgba(2,6,23,0.6) 50%, transparent 70%)',
-              boxShadow: '0 0 100px 50px rgba(14, 165, 233, 0.2), inset 0 0 80px 40px rgba(15, 23, 42, 0.4)',
-              maskImage: 'radial-gradient(circle, black 40%, transparent 80%)',
-              WebkitMaskImage: 'radial-gradient(circle, black 40%, transparent 80%)',
-            }}
-          >
-            <div className="absolute inset-0 rounded-full opacity-80" style={{ backgroundImage: 'radial-gradient(1.5px 1.5px at 20% 30%, #fff, transparent), radial-gradient(2px 2px at 60% 20%, #38bdf8, transparent)', backgroundSize: '120px 120px' }}></div>
-            <div className="absolute inset-0 rounded-full opacity-60 animate-[spin_120s_linear_infinite_reverse]" style={{ backgroundImage: 'radial-gradient(2px 2px at 15% 25%, #bae6fd, transparent), radial-gradient(3px 3px at 50% 60%, #fff, transparent)', backgroundSize: '80px 80px' }}></div>
-            <div className="absolute inset-0 rounded-full opacity-40 animate-[spin_80s_linear_infinite]" style={{ backgroundImage: 'radial-gradient(1px 1px at 30% 20%, #fff, transparent), radial-gradient(2px 2px at 50% 50%, #bae6fd, transparent)', backgroundSize: '40px 40px' }}></div>
-          </div>
-          <div className="absolute w-40 h-40 bg-white rounded-full blur-[30px] opacity-90 shadow-[0_0_80px_40px_rgba(255,255,255,0.8)]"></div>
-          <div className="absolute w-72 h-72 bg-cyan-200 rounded-full blur-[60px] opacity-60"></div>
-          <div className="absolute w-96 h-96 bg-blue-500 rounded-full blur-[100px] opacity-30"></div>
-        </div>
-      )}
 
       <main className="relative z-10 max-w-7xl mx-auto px-3 sm:px-6 py-6 sm:py-8 md:py-16 flex flex-col gap-8 sm:gap-14 md:gap-24 pt-16 sm:pt-10">
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.45 }}>
