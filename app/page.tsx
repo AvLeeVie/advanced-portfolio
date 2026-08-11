@@ -522,6 +522,71 @@ export default function Home() {
               </p>
             </article>
           </div>
+
+          <article className={`theme-box col-span-full rounded-2xl border p-6 sm:p-8 transition-all duration-[2000ms] backdrop-blur-md ${isDarkMode ? 'bg-slate-900/50 border-blue-900/35 shadow-[0_0_40px_rgba(14,165,233,0.08)]' : 'bg-white/80 border-slate-200/80 shadow-[0_20px_50px_-30px_rgba(14,165,233,0.25)]'}`}>
+            <h4 className={`text-lg font-bold mb-4 transition-colors ${isDarkMode ? 'text-cyan-400' : 'text-blue-600'}`}>Ren'Py space scene snippet</h4>
+            <div className="overflow-x-auto rounded-2xl border border-slate-300/20 bg-slate-950/95 p-4 text-sm text-slate-100 font-mono whitespace-pre-wrap">
+              <code>{`# Can be used in scenarios like imaginations, outside the window in Act 3, or anything you like.
+# To run the code, simply type this:
+## call space
+## with dissolve (or replace it with any transitions or none.)
+# to hide it, just simply change the scene to anything.
+
+image stars:
+    "images/cg/monika/mask_2.png"
+    additive 1 xtile 3
+image galaxy:
+    "images/cg/monika/mask_3.png"
+    xtile 3 subpixel True
+    block:
+        xoffset 1280
+        linear 180 xoffset 0
+        repeat
+image fog:
+    "images/cg/monika/mask.png"
+    xtile 3 additive 1
+
+label space:
+    scene black
+    show galaxy:
+        truecenter
+        ycenter 300
+    show stars as m3:
+        subpixel True
+        xcenter 640 ycenter 360
+        zoom 1 alpha 0.35
+        block:
+            xcenter 640
+            linear 120 xcenter -640
+            repeat
+    show stars as m2:
+        subpixel True
+        xcenter 640 ycenter 360
+        zoom 1.5 alpha 0.5 xzoom -1
+        block:
+            xcenter 640
+            linear 105 xcenter -1280
+            repeat
+    show stars as m1:
+        subpixel True
+        xcenter 640 ycenter 360
+        zoom 2 alpha 0.65
+        block:
+            xcenter 640
+            linear 90 xcenter -1920
+            repeat
+    show fog:
+        subpixel True
+        xcenter 640 ycenter 360 zoom 1 alpha 0.15
+        block:
+            xcenter 640
+            linear 25 xcenter -640
+            repeat
+    show vignette:
+        alpha 0.25
+    return`}</code>
+            </div>
+          </article>
         </motion.section>
 
         <motion.section
