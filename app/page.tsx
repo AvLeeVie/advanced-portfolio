@@ -116,17 +116,34 @@ export default function Home() {
 
     const parameters = {
       count: 14000,
-      size: 0.42,
-      radius: 140,
+      size: 0.45,
+      radius: 160,
       branches: 2,
-      spin: 0.95,
-      randomness: 0.18,
-      randomnessPower: 2.4,
+      spin: 1.05,
+      randomness: 0.12,
+      randomnessPower: 1.8,
       insideColor: isDarkMode ? '#93c5fd' : '#1d4ed8',
       outsideColor: isDarkMode ? '#38bdf8' : '#60a5fa',
     };
 
     let points: THREE.Points | null = null;
+    let geometry: THREE.BufferGeometry | null = null;
+    let basePositions: Float32Array | null = null;
+    let spherePositions: Float32Array | null = null;
+    let explodeDirections: Float32Array | null = null;
+
+    const timeline = {
+      spiral: 14,
+      collapse: 4,
+      bigbang: 3.5,
+      reset: 5,
+    };
+    const cycleLength = timeline.spiral + timeline.collapse + timeline.bigbang + timeline.reset;
+    const sphereRadius = 18;
+    const explosionForce = 280;
+    const startTime = performance.now();
+
+    const easeInOut = (t: number) => t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
 
     const generateGalaxy = () => {
       if (points !== null) {
@@ -135,25 +152,46 @@ export default function Home() {
         (points.material as THREE.Material).dispose();
       }
 
-      const geometry = new THREE.BufferGeometry();
+      geometry = new THREE.BufferGeometry();
       const positions = new Float32Array(parameters.count * 3);
       const colors = new Float32Array(parameters.count * 3);
+      basePositions = new Float32Array(parameters.count * 3);
+      spherePositions = new Float32Array(parameters.count * 3);
+      explodeDirections = new Float32Array(parameters.count * 3);
       const colorInside = new THREE.Color(parameters.insideColor);
       const colorOutside = new THREE.Color(parameters.outsideColor);
 
       for (let i = 0; i < parameters.count; i += 1) {
         const i3 = i * 3;
-        const radius = Math.pow(Math.random(), 1.5) * parameters.radius;
+        const radius = Math.pow(Math.random(), 0.85) * parameters.radius;
         const branchAngle = ((i % parameters.branches) / parameters.branches) * Math.PI * 2;
         const spinAngle = radius * parameters.spin;
         const armAngle = branchAngle + spinAngle;
-        const randomX = (Math.random() - 0.5) * parameters.randomness * radius * 0.7;
-        const randomY = (Math.random() - 0.5) * 0.8 * (parameters.randomness * radius * 0.25);
-        const randomZ = (Math.random() - 0.5) * parameters.randomness * radius * 0.7;
+        const randomX = (Math.random() - 0.5) * parameters.randomness * radius * 0.6;
+        const randomY = (Math.random() - 0.5) * parameters.randomness * radius * 0.18;
+        const randomZ = (Math.random() - 0.5) * parameters.randomness * radius * 0.6;
 
-        positions[i3] = Math.cos(armAngle) * radius + randomX;
-        positions[i3 + 1] = randomY;
-        positions[i3 + 2] = Math.sin(armAngle) * radius + randomZ;
+        const x = Math.cos(armAngle) * radius + randomX;
+        const y = randomY * 0.9;
+        const z = Math.sin(armAngle) * radius + randomZ;
+
+        basePositions[i3] = x;
+        basePositions[i3 + 1] = y;
+        basePositions[i3 + 2] = z;
+        positions[i3] = x;
+        positions[i3 + 1] = y;
+        positions[i3 + 2] = z;
+
+        const theta = Math.acos(2 * Math.random() - 1);
+        const phi = Math.random() * Math.PI * 2;
+        spherePositions[i3] = Math.sin(theta) * Math.cos(phi) * sphereRadius;
+        spherePositions[i3 + 1] = Math.cos(theta) * sphereRadius;
+        spherePositions[i3 + 2] = Math.sin(theta) * Math.sin(phi) * sphereRadius;
+
+        const direction = new THREE.Vector3(x, y, z).normalize();
+        explodeDirections[i3] = direction.x;
+        explodeDirections[i3 + 1] = direction.y;
+        explodeDirections[i3 + 2] = direction.z;
 
         const mixedColor = colorInside.clone();
         mixedColor.lerp(colorOutside, radius / parameters.radius);
@@ -184,13 +222,81 @@ export default function Home() {
     const ambientLight = new THREE.AmbientLight(isDarkMode ? '#bde4ff' : '#dbeafe', 1.3);
     scene.add(ambientLight);
 
-    const render = () => {
-      if (points) {
-        points.rotation.y += 0.00045;
-        points.rotation.z += 0.0003;
+    const updateGalaxy = () => {
+      if (!geometry || !points || !basePositions || !spherePositions || !explodeDirections) return;
+      const elapsed = (performance.now() - startTime) / 1000;
+      const cycleTime = elapsed % cycleLength;
+      let phaseProgress = 0;
+      let phase = 'spiral';
+
+      if (cycleTime < timeline.spiral) {
+        phase = 'spiral';
+        phaseProgress = cycleTime / timeline.spiral;
+      } else if (cycleTime < timeline.spiral + timeline.collapse) {
+        phase = 'collapse';
+        phaseProgress = (cycleTime - timeline.spiral) / timeline.collapse;
+      } else if (cycleTime < timeline.spiral + timeline.collapse + timeline.bigbang) {
+        phase = 'bigbang';
+        phaseProgress = (cycleTime - timeline.spiral - timeline.collapse) / timeline.bigbang;
+      } else {
+        phase = 'reset';
+        phaseProgress = (cycleTime - timeline.spiral - timeline.collapse - timeline.bigbang) / timeline.reset;
       }
+
+      const positions = geometry.getAttribute('position') as THREE.BufferAttribute;
+      const array = positions.array as Float32Array;
+      const eased = easeInOut(Math.min(Math.max(phaseProgress, 0), 1));
+
+      for (let i = 0; i < parameters.count; i += 1) {
+        const i3 = i * 3;
+        const baseX = basePositions[i3];
+        const baseY = basePositions[i3 + 1];
+        const baseZ = basePositions[i3 + 2];
+        const ballX = spherePositions[i3];
+        const ballY = spherePositions[i3 + 1];
+        const ballZ = spherePositions[i3 + 2];
+        const dirX = explodeDirections[i3];
+        const dirY = explodeDirections[i3 + 1];
+        const dirZ = explodeDirections[i3 + 2];
+
+        if (phase === 'spiral') {
+          const baseRadius = Math.sqrt(baseX * baseX + baseZ * baseZ);
+          const spiraled = baseRadius + (parameters.radius * 0.98 - baseRadius) * eased;
+          const rotate = elapsed * 0.52 + baseRadius * 0.004;
+          const cos = Math.cos(rotate);
+          const sin = Math.sin(rotate);
+          array[i3] = Math.cos(rotate) * spiraled;
+          array[i3 + 1] = baseY + Math.sin(elapsed * 1.0 + baseRadius * 0.01) * 0.8;
+          array[i3 + 2] = Math.sin(rotate) * spiraled;
+        } else if (phase === 'collapse') {
+          array[i3] = baseX * (1 - eased) + ballX * eased;
+          array[i3 + 1] = baseY * (1 - eased) + ballY * eased;
+          array[i3 + 2] = baseZ * (1 - eased) + ballZ * eased;
+        } else if (phase === 'bigbang') {
+          const explosionT = eased;
+          const spread = explosionForce * explosionT * (1 + 0.9 * Math.sin(explosionT * Math.PI * 2));
+          array[i3] = ballX + dirX * spread;
+          array[i3 + 1] = ballY + dirY * spread * 0.95;
+          array[i3 + 2] = ballZ + dirZ * spread;
+        } else {
+          const fade = 1 - eased * 0.65;
+          array[i3] = baseX * fade + ballX * (1 - fade);
+          array[i3 + 1] = baseY * fade + ballY * (1 - fade);
+          array[i3 + 2] = baseZ * fade + ballZ * (1 - fade);
+        }
+      }
+
+      positions.needsUpdate = true;
+      points.rotation.y += 0.0022;
+      points.rotation.x += 0.00065;
+      const scale = 1 + Math.sin(elapsed * 1.2) * 0.025;
+      points.scale.setScalar(phase === 'bigbang' ? 1.08 : scale);
+    };
+
+    const render = () => {
+      updateGalaxy();
       renderer.render(scene, camera);
-      requestAnimationFrame(render);
+      frameId = requestAnimationFrame(render);
     };
 
     let frameId = requestAnimationFrame(render);
