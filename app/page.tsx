@@ -310,9 +310,12 @@ export default function Home() {
           const explosionX = dirX * explosionPeak;
           const explosionY = dirY * explosionPeak * 0.95;
           const explosionZ = dirZ * explosionPeak;
-          array[i3] = explosionX;
-          array[i3 + 1] = explosionY;
-          array[i3 + 2] = explosionZ;
+          const spiralX = Math.cos(rotateAngle) * baseRadius;
+          const spiralY = baseY;
+          const spiralZ = Math.sin(rotateAngle) * baseRadius;
+          array[i3] = explosionX * (1 - eased) + spiralX * eased;
+          array[i3 + 1] = explosionY * (1 - eased) + spiralY * eased;
+          array[i3 + 2] = explosionZ * (1 - eased) + spiralZ * eased;
         }
       }
 
