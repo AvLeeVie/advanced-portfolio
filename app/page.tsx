@@ -299,13 +299,12 @@ export default function Home() {
           array[i3 + 2] = Math.sin(rotateAngle) * radius;
         } else if (phase === 'bigbang') {
           const spread = explosionMax * (0.85 + 0.65 * eased);
-          const collapseInfluence = 1 - eased;
-          const centerX = Math.cos(rotateAngle) * baseRadius * collapseInfluence;
-          const centerY = baseY * collapseInfluence;
-          const centerZ = Math.sin(rotateAngle) * baseRadius * collapseInfluence;
-          array[i3] = centerX + dirX * spread * eased;
-          array[i3 + 1] = centerY + dirY * spread * eased * 0.95;
-          array[i3 + 2] = centerZ + dirZ * spread * eased;
+          const targetX = dirX * spread;
+          const targetY = dirY * spread * 0.95;
+          const targetZ = dirZ * spread;
+          array[i3] = targetX * eased;
+          array[i3 + 1] = targetY * eased;
+          array[i3 + 2] = targetZ * eased;
         } else {
           const spiralX = Math.cos(rotateAngle) * baseRadius;
           const spiralY = baseY;
