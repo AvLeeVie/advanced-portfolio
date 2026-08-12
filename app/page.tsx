@@ -146,6 +146,7 @@ export default function Home() {
     };
     const cycleLength = timeline.spiral + timeline.collapse + timeline.bigbang + timeline.reset;
     const explosionMax = 200;
+    const explosionPeak = explosionMax * 1.25;
     const startTime = performance.now();
 
     const easeInOut = (t: number) => t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
@@ -298,17 +299,17 @@ export default function Home() {
           array[i3 + 1] = baseY * (1 - eased * 0.95);
           array[i3 + 2] = Math.sin(rotateAngle) * radius;
         } else if (phase === 'bigbang') {
-          const spread = explosionMax * (0.85 + 0.65 * eased);
+          const spread = explosionPeak * eased;
           const targetX = dirX * spread;
           const targetY = dirY * spread * 0.95;
           const targetZ = dirZ * spread;
-          array[i3] = targetX * eased;
-          array[i3 + 1] = targetY * eased;
-          array[i3 + 2] = targetZ * eased;
+          array[i3] = targetX;
+          array[i3 + 1] = targetY;
+          array[i3 + 2] = targetZ;
         } else {
-          const explosionX = dirX * explosionMax;
-          const explosionY = dirY * explosionMax * 0.95;
-          const explosionZ = dirZ * explosionMax;
+          const explosionX = dirX * explosionPeak;
+          const explosionY = dirY * explosionPeak * 0.95;
+          const explosionZ = dirZ * explosionPeak;
           array[i3] = explosionX;
           array[i3 + 1] = explosionY;
           array[i3 + 2] = explosionZ;
