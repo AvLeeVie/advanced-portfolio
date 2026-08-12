@@ -145,7 +145,7 @@ export default function Home() {
       reset: 5,
     };
     const cycleLength = timeline.spiral + timeline.collapse + timeline.bigbang + timeline.reset;
-    const explosionMax = 42;
+    const explosionMax = 200;
     const startTime = performance.now();
 
     const easeInOut = (t: number) => t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
@@ -306,15 +306,12 @@ export default function Home() {
           array[i3 + 1] = targetY * eased;
           array[i3 + 2] = targetZ * eased;
         } else {
-          const spiralX = Math.cos(rotateAngle) * baseRadius;
-          const spiralY = baseY;
-          const spiralZ = Math.sin(rotateAngle) * baseRadius;
           const explosionX = dirX * explosionMax;
           const explosionY = dirY * explosionMax * 0.95;
           const explosionZ = dirZ * explosionMax;
-          array[i3] = explosionX * (1 - eased) + spiralX * eased;
-          array[i3 + 1] = explosionY * (1 - eased) + spiralY * eased;
-          array[i3 + 2] = explosionZ * (1 - eased) + spiralZ * eased;
+          array[i3] = explosionX;
+          array[i3 + 1] = explosionY;
+          array[i3 + 2] = explosionZ;
         }
       }
 
