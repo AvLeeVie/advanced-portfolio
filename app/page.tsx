@@ -186,7 +186,13 @@ export default function Home() {
         positions[i3 + 1] = y;
         positions[i3 + 2] = z;
 
-        const direction = new THREE.Vector3(x, y, z).normalize();
+        const theta = Math.acos(2 * Math.random() - 1);
+        const phi = Math.random() * Math.PI * 2;
+        const direction = new THREE.Vector3(
+          Math.sin(theta) * Math.cos(phi),
+          Math.cos(theta),
+          Math.sin(theta) * Math.sin(phi),
+        );
         explodeDirections[i3] = direction.x;
         explodeDirections[i3 + 1] = direction.y;
         explodeDirections[i3 + 2] = direction.z;
@@ -292,10 +298,14 @@ export default function Home() {
           array[i3 + 1] = baseY * (1 - eased * 0.95);
           array[i3 + 2] = Math.sin(rotateAngle) * radius;
         } else if (phase === 'bigbang') {
-          const spread = explosionMax * (0.75 + 0.75 * eased);
-          array[i3] = dirX * spread;
-          array[i3 + 1] = dirY * spread * 0.95;
-          array[i3 + 2] = dirZ * spread;
+          const spread = explosionMax * (0.85 + 0.65 * eased);
+          const collapseInfluence = 1 - eased;
+          const centerX = Math.cos(rotateAngle) * baseRadius * collapseInfluence;
+          const centerY = baseY * collapseInfluence;
+          const centerZ = Math.sin(rotateAngle) * baseRadius * collapseInfluence;
+          array[i3] = centerX + dirX * spread * eased;
+          array[i3 + 1] = centerY + dirY * spread * eased * 0.95;
+          array[i3 + 2] = centerZ + dirZ * spread * eased;
         } else {
           const spiralX = Math.cos(rotateAngle) * baseRadius;
           const spiralY = baseY;
@@ -650,71 +660,6 @@ export default function Home() {
               </p>
             </article>
           </div>
-
-          <article className={`theme-box col-span-full rounded-2xl border p-6 sm:p-8 transition-all duration-[2000ms] backdrop-blur-md ${isDarkMode ? 'bg-slate-900/50 border-blue-900/35 shadow-[0_0_40px_rgba(14,165,233,0.08)]' : 'bg-white/80 border-slate-200/80 shadow-[0_20px_50px_-30px_rgba(14,165,233,0.25)]'}`}>
-            <h4 className={`text-lg font-bold mb-4 transition-colors ${isDarkMode ? 'text-cyan-400' : 'text-blue-600'}`}>Ren'Py space scene snippet</h4>
-            <div className="overflow-x-auto rounded-2xl border border-slate-300/20 bg-slate-950/95 p-4 text-sm text-slate-100 font-mono whitespace-pre-wrap">
-              <code>{`# Can be used in scenarios like imaginations, outside the window in Act 3, or anything you like.
-# To run the code, simply type this:
-## call space
-## with dissolve (or replace it with any transitions or none.)
-# to hide it, just simply change the scene to anything.
-
-image stars:
-    "images/cg/monika/mask_2.png"
-    additive 1 xtile 3
-image galaxy:
-    "images/cg/monika/mask_3.png"
-    xtile 3 subpixel True
-    block:
-        xoffset 1280
-        linear 180 xoffset 0
-        repeat
-image fog:
-    "images/cg/monika/mask.png"
-    xtile 3 additive 1
-
-label space:
-    scene black
-    show galaxy:
-        truecenter
-        ycenter 300
-    show stars as m3:
-        subpixel True
-        xcenter 640 ycenter 360
-        zoom 1 alpha 0.35
-        block:
-            xcenter 640
-            linear 120 xcenter -640
-            repeat
-    show stars as m2:
-        subpixel True
-        xcenter 640 ycenter 360
-        zoom 1.5 alpha 0.5 xzoom -1
-        block:
-            xcenter 640
-            linear 105 xcenter -1280
-            repeat
-    show stars as m1:
-        subpixel True
-        xcenter 640 ycenter 360
-        zoom 2 alpha 0.65
-        block:
-            xcenter 640
-            linear 90 xcenter -1920
-            repeat
-    show fog:
-        subpixel True
-        xcenter 640 ycenter 360 zoom 1 alpha 0.15
-        block:
-            xcenter 640
-            linear 25 xcenter -640
-            repeat
-    show vignette:
-        alpha 0.25
-    return`}</code>
-            </div>
-          </article>
         </motion.section>
 
         <motion.section

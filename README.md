@@ -35,59 +35,6 @@ The easiest way to deploy your Next.js app is to use the [Vercel Platform](https
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
 
-## Ren'Py Scene Snippet
-
-The following Ren'Py code can be used to create a space scene with moving stars, galaxy, and fog effects:
-
-```renpy
-# Can be used in scenarios like imaginations, outside the window in Act 3, or anything you like.
-# To run the code, simply type this:
-## call space
-## with dissolve (or replace it with any transitions or none.)
-# to hide it, just simply change the scene to anything.
-
-image stars:
-    "images/cg/monika/mask_2.png"
-    additive 1 xtile 3
-image galaxy:
-    "images/cg/monika/mask_3.png"
-    xtile 3 subpixel True
-    block:
-        xoffset 1280
-        linear 180 xoffset 0
-        repeat
-image fog:
-    "images/cg/monika/mask.png"
-    xtile 3 additive 1
-
-label space:
-    scene black
-    show galaxy:
-        truecenter
-        ycenter 300
-    show stars as m3:
-        subpixel True
-        xcenter 640 ycenter 360
-        zoom 1 alpha 0.35
-        block:
-            xcenter 640
-            linear 120 xcenter -640
-            repeat
-    show stars as m2:
-        subpixel True
-        xcenter 640 ycenter 360
-        zoom 1.5 alpha 0.5 xzoom -1
-        block:
-            xcenter 640
-            linear 105 xcenter -1280
-            repeat
-    show stars as m1:
-        subpixel True
-        xcenter 640 ycenter 360
-        zoom 2 alpha 0.65
-        block:
-            xcenter 640
-            linear 90 xcenter -1920
             repeat
     show fog:
         subpixel True
