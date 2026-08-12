@@ -24,6 +24,8 @@ export default function Home() {
   const projectsInView = useInView(projectsRef, { amount: 0.2, once: false });
   const galleryInView = useInView(galleryRef, { amount: 0.2, once: false });
   const achievementsInView = useInView(achievementsRef, { amount: 0.2, once: false });
+  const isDarkModeRef = useRef(isDarkMode);
+  const themeColorUpdaterRef = useRef<((dark: boolean) => void) | null>(null);
 
   useEffect(() => {
     // initialize from localStorage or prefers-color-scheme
@@ -40,6 +42,11 @@ export default function Home() {
     window.addEventListener("theme-change", handler as EventListener);
     return () => window.removeEventListener("theme-change", handler as EventListener);
   }, []);
+
+  useEffect(() => {
+    isDarkModeRef.current = isDarkMode;
+    if (themeColorUpdaterRef.current) themeColorUpdaterRef.current(isDarkMode);
+  }, [isDarkMode]);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -122,25 +129,23 @@ export default function Home() {
       spin: 1.05,
       randomness: 0.12,
       randomnessPower: 1.8,
-      insideColor: isDarkMode ? '#93c5fd' : '#1d4ed8',
-      outsideColor: isDarkMode ? '#38bdf8' : '#60a5fa',
+      insideColor: isDarkModeRef.current ? '#93c5fd' : '#1d4ed8',
+      outsideColor: isDarkModeRef.current ? '#38bdf8' : '#60a5fa',
     };
 
     let points: THREE.Points | null = null;
     let geometry: THREE.BufferGeometry | null = null;
     let basePositions: Float32Array | null = null;
-    let spherePositions: Float32Array | null = null;
     let explodeDirections: Float32Array | null = null;
 
     const timeline = {
       spiral: 14,
       collapse: 4,
-      bigbang: 3.5,
+      bigbang: 4,
       reset: 5,
     };
     const cycleLength = timeline.spiral + timeline.collapse + timeline.bigbang + timeline.reset;
-    const sphereRadius = 120;
-    const explosionMagnitude = 0.18;
+    const explosionMax = 42;
     const startTime = performance.now();
 
     const easeInOut = (t: number) => t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
@@ -156,7 +161,6 @@ export default function Home() {
       const positions = new Float32Array(parameters.count * 3);
       const colors = new Float32Array(parameters.count * 3);
       basePositions = new Float32Array(parameters.count * 3);
-      spherePositions = new Float32Array(parameters.count * 3);
       explodeDirections = new Float32Array(parameters.count * 3);
       const colorInside = new THREE.Color(parameters.insideColor);
       const colorOutside = new THREE.Color(parameters.outsideColor);
@@ -181,12 +185,6 @@ export default function Home() {
         positions[i3] = x;
         positions[i3 + 1] = y;
         positions[i3 + 2] = z;
-
-        const theta = Math.acos(2 * Math.random() - 1);
-        const phi = Math.random() * Math.PI * 2;
-        spherePositions[i3] = Math.sin(theta) * Math.cos(phi) * sphereRadius;
-        spherePositions[i3 + 1] = Math.cos(theta) * sphereRadius;
-        spherePositions[i3 + 2] = Math.sin(theta) * Math.sin(phi) * sphereRadius;
 
         const direction = new THREE.Vector3(x, y, z).normalize();
         explodeDirections[i3] = direction.x;
@@ -219,11 +217,36 @@ export default function Home() {
 
     generateGalaxy();
 
-    const ambientLight = new THREE.AmbientLight(isDarkMode ? '#bde4ff' : '#dbeafe', 1.3);
+    const ambientLight = new THREE.AmbientLight(isDarkModeRef.current ? '#bde4ff' : '#dbeafe', 1.3);
     scene.add(ambientLight);
 
+    const updateGalaxyColors = (dark: boolean) => {
+      if (!geometry || !basePositions) return;
+      const colors = geometry.getAttribute('color') as THREE.BufferAttribute;
+      const colorInside = new THREE.Color(dark ? '#93c5fd' : '#1d4ed8');
+      const colorOutside = new THREE.Color(dark ? '#38bdf8' : '#60a5fa');
+      const array = colors.array as Float32Array;
+
+      for (let i = 0; i < parameters.count; i += 1) {
+        const i3 = i * 3;
+        const baseX = basePositions[i3];
+        const baseZ = basePositions[i3 + 2];
+        const radius = Math.sqrt(baseX * baseX + baseZ * baseZ);
+        const mixedColor = colorInside.clone();
+        mixedColor.lerp(colorOutside, radius / parameters.radius);
+        array[i3] = mixedColor.r;
+        array[i3 + 1] = mixedColor.g;
+        array[i3 + 2] = mixedColor.b;
+      }
+
+      colors.needsUpdate = true;
+      ambientLight.color.set(dark ? '#bde4ff' : '#dbeafe');
+    };
+
+    themeColorUpdaterRef.current = updateGalaxyColors;
+
     const updateGalaxy = () => {
-      if (!geometry || !points || !basePositions || !spherePositions || !explodeDirections) return;
+      if (!geometry || !points || !basePositions || !explodeDirections) return;
       const elapsed = (performance.now() - startTime) / 1000;
       const cycleTime = elapsed % cycleLength;
       let phaseProgress = 0;
@@ -252,45 +275,45 @@ export default function Home() {
         const baseX = basePositions[i3];
         const baseY = basePositions[i3 + 1];
         const baseZ = basePositions[i3 + 2];
-        const ballX = spherePositions[i3];
-        const ballY = spherePositions[i3 + 1];
-        const ballZ = spherePositions[i3 + 2];
         const dirX = explodeDirections[i3];
         const dirY = explodeDirections[i3 + 1];
         const dirZ = explodeDirections[i3 + 2];
+        const baseRadius = Math.sqrt(baseX * baseX + baseZ * baseZ);
+        const baseAngle = Math.atan2(baseZ, baseX);
+        const rotateAngle = baseAngle + elapsed * 0.42 + baseRadius * 0.0014;
 
         if (phase === 'spiral') {
-          const baseRadius = Math.sqrt(baseX * baseX + baseZ * baseZ);
-          const spiraled = baseRadius + (parameters.radius * 0.98 - baseRadius) * eased;
-          const rotate = elapsed * 0.52 + baseRadius * 0.004;
-          const cos = Math.cos(rotate);
-          const sin = Math.sin(rotate);
-          array[i3] = cos * spiraled;
-          array[i3 + 1] = baseY + Math.sin(elapsed * 1.0 + baseRadius * 0.01) * 0.8;
-          array[i3 + 2] = sin * spiraled;
+          array[i3] = Math.cos(rotateAngle) * baseRadius;
+          array[i3 + 1] = baseY + Math.sin(elapsed * 0.76 + baseRadius * 0.014) * 0.55;
+          array[i3 + 2] = Math.sin(rotateAngle) * baseRadius;
         } else if (phase === 'collapse') {
-          array[i3] = baseX * (1 - eased) + ballX * eased;
-          array[i3 + 1] = baseY * (1 - eased) + ballY * eased;
-          array[i3 + 2] = baseZ * (1 - eased) + ballZ * eased;
+          const radius = baseRadius * (1 - eased);
+          array[i3] = Math.cos(rotateAngle) * radius;
+          array[i3 + 1] = baseY * (1 - eased * 0.95);
+          array[i3 + 2] = Math.sin(rotateAngle) * radius;
         } else if (phase === 'bigbang') {
-          const explosionT = eased;
-          const spread = sphereRadius * (0.8 + explosionMagnitude * Math.sin(explosionT * Math.PI * 2));
-          array[i3] = ballX + dirX * spread * explosionT;
-          array[i3 + 1] = ballY + dirY * spread * explosionT * 0.9;
-          array[i3 + 2] = ballZ + dirZ * spread * explosionT;
+          const spread = explosionMax * (0.75 + 0.75 * eased);
+          array[i3] = dirX * spread;
+          array[i3 + 1] = dirY * spread * 0.95;
+          array[i3 + 2] = dirZ * spread;
         } else {
-          const fade = 1 - eased * 0.35;
-          array[i3] = baseX * fade + ballX * (1 - fade);
-          array[i3 + 1] = baseY * fade + ballY * (1 - fade);
-          array[i3 + 2] = baseZ * fade + ballZ * (1 - fade);
+          const spiralX = Math.cos(rotateAngle) * baseRadius;
+          const spiralY = baseY;
+          const spiralZ = Math.sin(rotateAngle) * baseRadius;
+          const explosionX = dirX * explosionMax;
+          const explosionY = dirY * explosionMax * 0.95;
+          const explosionZ = dirZ * explosionMax;
+          array[i3] = explosionX * (1 - eased) + spiralX * eased;
+          array[i3 + 1] = explosionY * (1 - eased) + spiralY * eased;
+          array[i3 + 2] = explosionZ * (1 - eased) + spiralZ * eased;
         }
       }
 
       positions.needsUpdate = true;
       points.rotation.y += 0.0022;
       points.rotation.x += 0.00065;
-      const scale = 1 + Math.sin(elapsed * 1.2) * 0.025;
-      points.scale.setScalar(phase === 'bigbang' ? 1.08 : scale);
+      const scale = 1 + Math.sin(elapsed * 1.2) * 0.024;
+      points.scale.setScalar(phase === 'bigbang' ? 1.06 : scale);
     };
 
     const render = () => {
@@ -323,7 +346,7 @@ export default function Home() {
       renderer.dispose();
       if (renderer.domElement.parentNode) renderer.domElement.parentNode.removeChild(renderer.domElement);
     };
-  }, [isDarkMode]);
+  }, []);
 
   const lightParticleOptions = {
     background: { color: { value: "transparent" } },
