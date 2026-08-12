@@ -139,8 +139,8 @@ export default function Home() {
       reset: 5,
     };
     const cycleLength = timeline.spiral + timeline.collapse + timeline.bigbang + timeline.reset;
-    const sphereRadius = 18;
-    const explosionForce = 280;
+    const sphereRadius = 120;
+    const explosionMagnitude = 0.18;
     const startTime = performance.now();
 
     const easeInOut = (t: number) => t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
@@ -265,21 +265,21 @@ export default function Home() {
           const rotate = elapsed * 0.52 + baseRadius * 0.004;
           const cos = Math.cos(rotate);
           const sin = Math.sin(rotate);
-          array[i3] = Math.cos(rotate) * spiraled;
+          array[i3] = cos * spiraled;
           array[i3 + 1] = baseY + Math.sin(elapsed * 1.0 + baseRadius * 0.01) * 0.8;
-          array[i3 + 2] = Math.sin(rotate) * spiraled;
+          array[i3 + 2] = sin * spiraled;
         } else if (phase === 'collapse') {
           array[i3] = baseX * (1 - eased) + ballX * eased;
           array[i3 + 1] = baseY * (1 - eased) + ballY * eased;
           array[i3 + 2] = baseZ * (1 - eased) + ballZ * eased;
         } else if (phase === 'bigbang') {
           const explosionT = eased;
-          const spread = explosionForce * explosionT * (1 + 0.9 * Math.sin(explosionT * Math.PI * 2));
-          array[i3] = ballX + dirX * spread;
-          array[i3 + 1] = ballY + dirY * spread * 0.95;
-          array[i3 + 2] = ballZ + dirZ * spread;
+          const spread = sphereRadius * (0.8 + explosionMagnitude * Math.sin(explosionT * Math.PI * 2));
+          array[i3] = ballX + dirX * spread * explosionT;
+          array[i3 + 1] = ballY + dirY * spread * explosionT * 0.9;
+          array[i3 + 2] = ballZ + dirZ * spread * explosionT;
         } else {
-          const fade = 1 - eased * 0.65;
+          const fade = 1 - eased * 0.35;
           array[i3] = baseX * fade + ballX * (1 - fade);
           array[i3 + 1] = baseY * fade + ballY * (1 - fade);
           array[i3 + 2] = baseZ * fade + ballZ * (1 - fade);
@@ -478,7 +478,6 @@ export default function Home() {
 
       <Particles
         id="tsparticles"
-        key={isDarkMode ? 'dark' : 'light'}
         init={particlesInit}
         options={isDarkMode ? darkParticleOptions : lightParticleOptions}
         className="fixed inset-0 -z-40"
